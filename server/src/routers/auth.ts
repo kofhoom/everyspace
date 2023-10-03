@@ -1,17 +1,16 @@
 import { Request, Response, Router } from "express";
 import { User } from "../entities/User";
 import { isEmpty, validate } from "class-validator";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import cookie from "cookie";
 import { mapError } from "../utils/helpers";
+import bcrypt from "bcryptjs"; // 비밀번호 암호화
+import jwt from "jsonwebtoken"; // 로그인 토큰
+import cookie from "cookie";
 
 /* 라우터 설정 */
 
 // 회원가입
 const register = async (req: Request, res: Response) => {
   const { email, username, password } = req.body;
-  console.log("email", email);
 
   try {
     let errors: any = {};
@@ -55,6 +54,7 @@ const login = async (req: Request, res: Response) => {
 
   try {
     let errors: any = {};
+
     //비워져 있다면 에러를 프론트엔드로 보내주기
     if (isEmpty(username)) errors.username = "사용자 이름을 입력해주세요.";
     if (isEmpty(password)) errors.password = "비밀번호를 입력해주세요.";
@@ -81,8 +81,17 @@ const login = async (req: Request, res: Response) => {
     // 비밀번호가 맞다면 토근 생성
     const token = jwt.sign({ username }, process.env.JWT_SECRET);
 
-    // 쿠키저장
-    res.set("Set-Cookie", cookie.serialize("token", token));
+    // 쿠키저장 & 보안 설정
+    res.set(
+      "Set-Cookie",
+      cookie.serialize("token", token, {
+        httpOnly: true, // 자바스크립트 에서 쿠키를 사용할 수 없게 설정
+        secure: process.env.NODE_ENV === "production", //https 연결에서 쿠키를 사용 할 수 있게 설정
+        sameSite: "strict", // 외부 사이트에서 요청시 브라우자가 쿠리를 보내지 못하도록 막아줌 (xsrf공격 방어)
+        maxAge: 60 * 60 * 24 * 7, // 쿠키 저장시간 1week
+        path: "/",
+      })
+    );
     return res.json({ user, token });
   } catch (error) {
     console.log(error);

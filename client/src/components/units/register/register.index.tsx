@@ -29,7 +29,7 @@ export default function RegisterList() {
   };
   return (
     <div className="bg-white">
-      <div className="flex flex-col items-center justify-center h-screen p-6">
+      <div className="flex  items-center h-screen p-6">
         <div className="w-10/12 mx-auto md:w-96">
           <h1 className="mb-2 text-lg font-medium">회원가입</h1>
           <form onSubmit={handleSubmit}>
@@ -40,7 +40,7 @@ export default function RegisterList() {
               error={errors.email}
             />
             <InputGroup
-              placeholder="Username"
+              placeholder="nickname"
               value={username}
               setValue={setUsername}
               error={errors.username}
