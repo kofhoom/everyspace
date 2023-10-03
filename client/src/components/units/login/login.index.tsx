@@ -4,12 +4,14 @@ import InputGroup from "../../commons/inputs/01";
 import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { useAuthDispatch } from "@/src/context/auth";
 
 export default function LoginListPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<any>({});
 
+  const dispatch = useAuthDispatch();
   const router = useRouter();
 
   const handleSubmit = async (event: FormEvent) => {
@@ -26,6 +28,8 @@ export default function LoginListPage() {
         }
       );
       console.log(res);
+      dispatch("LOGIN", res.data?.user);
+      router.push("/");
     } catch (error: any) {
       console.log("error", error);
       setErrors(error?.response?.data || {});
