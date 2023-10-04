@@ -5,6 +5,7 @@ import { isEmpty } from "class-validator";
 import { AppDataSource } from "../data-source";
 import Sub from "../entities/Sub";
 import { User } from "../entities/User";
+
 /* 라우터 설정 */
 const createBoard = async (req: Request, res: Response, next) => {
   const [name, title, description] = req.body;
@@ -23,23 +24,23 @@ const createBoard = async (req: Request, res: Response, next) => {
     if (Object.keys(errors).length > 0) {
       throw errors;
     }
-    // sub instance 생성 수 데이터베이스에 저장
-
-    // 저장한 정보 프론트엔드로 전달해주기
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "문제가 발생했습니다." });
   }
 
   try {
+    // sub instance 생성 수 데이터베이스에 저장
+
     const user: User = res.locals.user;
     const sub = new Sub();
     sub.name = name;
     sub.title = title;
     sub.description = description;
     sub.user = user;
-
     await sub.save();
+
+    // 저장한 정보 프론트엔드로 전달해주기
     return res.json(sub);
   } catch (error) {
     return res.status(500).json({ error: "문제가 발생했습니다." });
