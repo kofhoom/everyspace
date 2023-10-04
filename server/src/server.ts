@@ -6,6 +6,7 @@ import authRoutes from "./routers/auth";
 import boardRoutes from "./routers/boards";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const origin = "http://localhost:3000";
@@ -17,7 +18,7 @@ app.use(
 );
 app.use(express.json());
 app.use(morgan("dev"));
-
+app.use(cookieParser());
 dotenv.config(); //환경변수 설정
 
 app.get("/", (_, res) => res.send("running"));
