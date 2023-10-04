@@ -1,5 +1,5 @@
-import LoginListPage from "@/src/components/units/login/login.index";
+import LoginListPage from "@/src/components/units/login/Login.index";
 
-export default function Login() {
+export default function LoginPage() {
   return <LoginListPage />;
 }

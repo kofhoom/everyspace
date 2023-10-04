@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     authenticated: false,
     loading: true,
   });
-
+  console.log(state);
   const dispatch = (type: string, payload?: any) => {
     defaultDispatch({ type, payload });
   };

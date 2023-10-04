@@ -3,6 +3,7 @@ import express from "express";
 import morgan from "morgan";
 import { AppDataSource } from "./data-source";
 import authRoutes from "./routers/auth";
+import boardRoutes from "./routers/boards";
 import cors from "cors";
 import dotenv from "dotenv";
 
@@ -21,6 +22,7 @@ dotenv.config(); //환경변수 설정
 
 app.get("/", (_, res) => res.send("running"));
 app.use("/api/auth", authRoutes);
+app.use("/api/boards", boardRoutes);
 
 let port = 4000;
 
