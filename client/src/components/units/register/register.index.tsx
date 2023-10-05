@@ -3,14 +3,17 @@ import InputGroup from "../../commons/inputs/01";
 import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { useAuthState } from "@/src/context/auth";
 
 export default function RegisterList() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<any>({});
+  const { authenticated } = useAuthState();
 
-  const router = useRouter();
+  if (authenticated) router.push("/"); //이미 로그인된 유져는 리다이렉트 시킴
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();

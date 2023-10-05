@@ -3,7 +3,7 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
 
-export default function BoardWrite() {
+const BoardWrite = () => {
   const [name, setName] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -21,7 +21,7 @@ export default function BoardWrite() {
       router.push(`/r/${res.data?.name}`);
     } catch (error: any) {
       console.log(error);
-      setErrors(error.response.data);
+      setErrors(error?.response?.data);
     }
   };
   return (
@@ -76,4 +76,5 @@ export default function BoardWrite() {
       </div>
     </div>
   );
-}
+};
+export default BoardWrite;

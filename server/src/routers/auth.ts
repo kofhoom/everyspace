@@ -5,8 +5,14 @@ import { mapError } from "../utils/helpers";
 import bcrypt from "bcryptjs"; // 비밀번호 암호화
 import jwt from "jsonwebtoken"; // 로그인 토큰
 import cookie from "cookie";
-
+import userMiddleware from "../middlewares/user"; // user 미들웨어
+import authMiddleware from "../middlewares/auth"; // auth 미들웨어
 /* 라우터 설정 */
+
+// 인증처리
+const me = async (_: Request, res: Response) => {
+  return res.json(res.locals.user);
+};
 
 // 회원가입
 const register = async (req: Request, res: Response) => {
@@ -100,6 +106,7 @@ const login = async (req: Request, res: Response) => {
 };
 
 const router = Router();
+router.get("/me", userMiddleware, authMiddleware, me);
 router.post("/register", register);
 router.post("/login", login);
 

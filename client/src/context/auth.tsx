@@ -1,5 +1,6 @@
 import { User } from "@/types";
-import { createContext, useReducer, useContext } from "react";
+import axios from "axios";
+import { createContext, useReducer, useContext, useEffect } from "react";
 
 interface State {
   authenticated: boolean;
@@ -50,11 +51,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     authenticated: false,
     loading: true,
   });
-  console.log(state);
+
   const dispatch = (type: string, payload?: any) => {
     defaultDispatch({ type, payload });
   };
 
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        const res = await axios.get("auth/me");
+        dispatch("LOGIN", res.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        dispatch("STOP_LOADING");
+      }
+    }
+    loadUser();
+  }, []);
   return (
     <DispatchContext.Provider value={dispatch}>
       <StateContext.Provider value={state}>{children}</StateContext.Provider>
