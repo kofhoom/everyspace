@@ -13,11 +13,15 @@ const BoardWrite = () => {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     try {
-      const res = await axios.post("/boards/", {
-        name,
-        title,
-        description,
-      });
+      const res = await axios.post(
+        "/boards/new",
+        {
+          name,
+          title,
+          description,
+        },
+        { withCredentials: true }
+      );
       router.push(`/r/${res.data?.name}`);
     } catch (error: any) {
       console.log(error);
@@ -40,7 +44,7 @@ const BoardWrite = () => {
               placeholder="제목"
               value={name}
               setValue={setName}
-              error={errors.name}
+              error={errors?.name}
             ></InputGroup>
           </div>
           <div className="my-6">
@@ -52,7 +56,7 @@ const BoardWrite = () => {
               placeholder="이름"
               value={title}
               setValue={setTitle}
-              error={errors.title}
+              error={errors?.title}
             ></InputGroup>
           </div>
           <div className="my-6">
@@ -64,7 +68,7 @@ const BoardWrite = () => {
               placeholder="설명"
               value={description}
               setValue={setDescription}
-              error={errors.description}
+              error={errors?.description}
             ></InputGroup>
           </div>
           <div className="flex justify-end">
