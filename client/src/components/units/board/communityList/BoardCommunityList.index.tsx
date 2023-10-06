@@ -1,7 +1,14 @@
+import { Sub } from "@/types";
+import axios from "axios";
 import Link from "next/link";
-
+import useSwR from "swr";
 // 메인 사이드바
 export default function BoardCommunityList() {
+  const fetcher = async (url: string) => {
+    return await axios.get(url).then((res) => res.data);
+  };
+  const address = "http://localhost:4000/api/boards/sub/topSubs";
+  const { data: topSobs } = useSwR<Sub[]>(address, fetcher);
   return (
     <div className="hidden w-4/12 ml-3 md:block">
       <div className="bg-white border rounded">

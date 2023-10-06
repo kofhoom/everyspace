@@ -5,6 +5,7 @@ import { isEmpty } from "class-validator";
 import { AppDataSource } from "../data-source";
 import Sub from "../entities/Sub";
 import { User } from "../entities/User";
+import Post from "../entities/Post";
 
 /* 라우터 설정 */
 const createBoard = async (req: Request, res: Response, next) => {
@@ -47,9 +48,28 @@ const createBoard = async (req: Request, res: Response, next) => {
   }
 };
 
+const topSubs = async (_: Request, res: Response) => {
+  try {
+    const imageUrlExp = `COALESCE(s."imageUrn",'https://www.gravatar.com/avatar?d=mp&f=y')`;
+    const subs = await AppDataSource.createQueryBuilder()
+      .select(
+        `s.title,s.name,${imageUrlExp} as "imageUrl", count(p.id) as "postCount"`
+      )
+      .from(Sub, "s")
+      .leftJoin(Post, "p", `s.name = p."subName"`)
+      .groupBy('s.title, s.name, "imageUrl"')
+      .orderBy(`"postCount"`, "DESC")
+      .limit(5)
+      .execute();
+    return res.json(subs);
+  } catch (error) {
+    return res.status(500).json({ error: "문제가 발생했습니다." });
+  }
+};
+
 // 커뮤니티 생성
 const router = Router();
 
 router.post("/", userMiddleware, authMiddleware, createBoard);
-
+router.get("/sub/topSubs", topSubs);
 export default router;
