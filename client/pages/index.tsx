@@ -1,4 +1,4 @@
-import BoardCommunityList from "@/src/components/units/board/communityList/BoardCommunityList.index";
+import BoardCommunityList from "@/src/components/units/communityList/BoardCommunityList.index";
 
 export default function Home() {
   return (

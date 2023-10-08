@@ -68,9 +68,24 @@ const topSubs = async (_: Request, res: Response) => {
   }
 };
 
+// 커뮤니티 상세
+const getSub = async (req: Request, res: Response) => {
+  const name = req.params.name;
+
+  try {
+    const sub = await Sub.findOneByOrFail({ name });
+
+    // 포스트를 생성한 후에 해당 sub에 속하는 포스트 정보들을 넣어주기
+
+    return res.json(sub);
+  } catch (error: any) {
+    return res.status(404).json({ error: "서브를 찾을수 없음니다" });
+  }
+};
 // 커뮤니티 생성
 const router = Router();
 
+router.get("/:name", userMiddleware, getSub);
 router.post("/new", userMiddleware, authMiddleware, createBoard);
 router.get("/sub/topSubs", topSubs);
 export default router;
