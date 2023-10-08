@@ -25,6 +25,7 @@ app.get("/", (_, res) => res.send("running"));
 app.use("/api/auth", authRoutes);
 app.use("/api/boards", boardRoutes);
 
+app.use(express.static("public")); // 브라우저로 접근 할때 정적파일 제공 허용
 let port = 4000;
 
 app.listen(port, async () => {
