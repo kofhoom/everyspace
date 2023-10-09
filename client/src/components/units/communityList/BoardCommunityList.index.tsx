@@ -29,7 +29,7 @@ export default function BoardCommunityList() {
               <Link href={`/r/${sub.name}`} legacyBehavior>
                 <a>
                   <Image
-                    src="https://www.gravatar.com/avatar?d=mp&f=y"
+                    src={sub.imageUrl}
                     className="rounded-full cursor-pointer"
                     alt="Sub"
                     width={24}

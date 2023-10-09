@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import useSwR from "swr";
 import { useRef, useState, useEffect, ChangeEvent } from "react";
 import { useAuthState } from "@/src/context/auth";
+import SideBar from "@/src/components/commons/sidebar";
 export default function CommunityDetailList() {
   const [ownSub, setOwnSub] = useState(false);
   const { authenticated, user } = useAuthState();
@@ -26,7 +27,7 @@ export default function CommunityDetailList() {
   useEffect(() => {
     if (!sub || !user) return;
     setOwnSub(authenticated && user.username === sub.username);
-  }, [sub]);
+  }, [authenticated, sub, user]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const openFileInput = (type: string) => {
@@ -109,7 +110,11 @@ export default function CommunityDetailList() {
             </div>
           </div>
           {/* 포스트와 사이드바 */}
-          <div className="flex maxw-5xl px-4 pt-5 mx-auto"></div>
+          <div className="flex max-w-5xl px-4 pt-5 mx-auto">
+            <div className="w-full md:mr-3 md:w-8/12">
+              <SideBar sub={sub} />
+            </div>
+          </div>
         </div>
       )}
     </>

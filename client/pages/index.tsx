@@ -6,7 +6,7 @@ export default function Home() {
       {/* 포스트 리스트 */}
       <div className="w-full md:mr-3 md:w-8/12"></div>
 
-      {/* 사이드바 */}
+      {/* 커뮤니티 리스트 */}
       <BoardCommunityList />
     </main>
   );
