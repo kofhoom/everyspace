@@ -14,12 +14,12 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const { username }: any = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await User.findOneBy({ username });
-    console.log(user);
     // 유져 정보가 없다면 throw error!
     if (!user) throw new Error("유져정보가 없습니다.");
 
     // 유져 정보를 res.local.user에 넣어주기
     res.locals.user = user;
+
     return next();
   } catch (error) {
     console.log(error);

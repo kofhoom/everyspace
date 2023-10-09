@@ -89,7 +89,6 @@ const getSub = async (req: Request, res: Response) => {
     if (res.locals.user) {
       sub.posts.forEach((p) => p.setUserVote(res.locals.user));
     }
-    console.log(sub);
     return res.json(sub);
   } catch (error: any) {
     return res.status(404).json({ error: "서브를 찾을수 없음니다" });

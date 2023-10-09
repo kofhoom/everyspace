@@ -4,6 +4,7 @@ import authMiddleware from "../middlewares/auth"; // auth 미들웨어
 import Sub from "../entities/Sub";
 import Post from "../entities/Post";
 
+// 포스트생성
 const createPost = async (req: Request, res: Response) => {
   const { title, body, sub } = req.body;
   if (title.trim() === "") {
@@ -26,8 +27,26 @@ const createPost = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "문제가 발생했습니다." });
   }
 };
-const router = Router();
 
+// 포스트 불러오기
+const getPost = async (req: Request, res: Response) => {
+  const { identifier, slug } = req.params;
+
+  try {
+    const post = await Post.findOneOrFail({
+      where: { identifier, slug },
+      relations: ["sub", "votes"],
+    });
+    if (res.locals.user) {
+      post.setUserVote(res.locals.user);
+    }
+    return res.send(post);
+  } catch (error) {
+    return res.status(404).json({ error: "게시물을 찾을 수 없습니다." });
+  }
+};
+const router = Router();
+router.get("/:identifier/:slug", userMiddleware, getPost);
 router.post("/", userMiddleware, authMiddleware, createPost);
 
 export default router;

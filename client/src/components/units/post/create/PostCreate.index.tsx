@@ -17,8 +17,11 @@ export default function PostCreateList() {
         body,
         sub: subName,
       });
+      console.log(subName, post.identifier, post.slug);
       router.push(`/r/${subName}/${post.identifier}/${post.slug}`);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div className="flex flex-col justify-center pt-16">
