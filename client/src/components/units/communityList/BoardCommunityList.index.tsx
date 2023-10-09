@@ -7,11 +7,9 @@ import useSwR from "swr";
 // 메인 사이드바
 export default function BoardCommunityList() {
   const { authenticated } = useAuthState();
-  const fetcher = async (url: string) => {
-    return await axios.get(url).then((res) => res.data);
-  };
+
   const address = "http://localhost:4000/api/boards/sub/topSubs";
-  const { data: topSubs } = useSwR<Sub[]>(address, fetcher);
+  const { data: topSubs } = useSwR<Sub[]>(address);
   // console.log("topSubs", topSubs);
   return (
     <div className="hidden w-4/12 ml-3 md:block">

@@ -8,20 +8,10 @@ import SideBar from "@/src/components/commons/sidebar";
 export default function CommunityDetailList() {
   const [ownSub, setOwnSub] = useState(false);
   const { authenticated, user } = useAuthState();
-  const fetcher = async (url: string) => {
-    try {
-      const res = await axios.get(url);
-      return res.data;
-    } catch (error: any) {
-      throw error.response.data;
-    }
-  };
+
   const router = useRouter();
   const subName = router.query.sub;
-  const { data: sub, error } = useSwR(
-    subName ? `/boards/${subName}` : null,
-    fetcher
-  );
+  const { data: sub, error } = useSwR(subName ? `/boards/${subName}` : null);
 
   // 자신의 글인지 판별 유무
   useEffect(() => {
