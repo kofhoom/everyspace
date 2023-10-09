@@ -3,8 +3,8 @@ import userMiddleware from "../middlewares/user"; // user 미들웨어
 import authMiddleware from "../middlewares/auth"; // auth 미들웨어
 import { isEmpty } from "class-validator";
 import { AppDataSource } from "../data-source";
-import Sub from "../entities/Sub";
 import { User } from "../entities/User";
+import Sub from "../entities/Sub";
 import Post from "../entities/Post";
 import multer, { FileFilterCallback } from "multer";
 import { makeId } from "../utils/helpers";
@@ -80,7 +80,16 @@ const getSub = async (req: Request, res: Response) => {
     const sub = await Sub.findOneByOrFail({ name });
 
     // 포스트를 생성한 후에 해당 sub에 속하는 포스트 정보들을 넣어주기
-
+    const posts = await Post.find({
+      where: { subName: sub.name },
+      order: { createdAt: "DESC" },
+      relations: ["comments", "votes"],
+    });
+    sub.posts = posts;
+    if (res.locals.user) {
+      sub.posts.forEach((p) => p.setUserVote(res.locals.user));
+    }
+    console.log(sub);
     return res.json(sub);
   } catch (error: any) {
     return res.status(404).json({ error: "서브를 찾을수 없음니다" });
