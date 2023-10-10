@@ -1,6 +1,5 @@
 import { useAuthState } from "@/src/context/auth";
 import { Sub } from "@/types";
-import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import useSwR from "swr";
@@ -9,15 +8,16 @@ export default function BoardCommunityList() {
   const { authenticated } = useAuthState();
 
   const address = "http://localhost:4000/api/boards/sub/topSubs";
+
   const { data: topSubs } = useSwR<Sub[]>(address);
-  // console.log("topSubs", topSubs);
+
   return (
     <div className="hidden w-4/12 ml-3 md:block">
       <div className="bg-white border rounded">
         <div className="p-4 border-b">
           <p className="text-lg font-semibold text-center">상위 커뮤니티</p>
         </div>
-        {/* 커뮤니티 리스트 */}
+        {/* 포스트 리스트 */}
         <div>
           {topSubs?.map((sub) => (
             <div

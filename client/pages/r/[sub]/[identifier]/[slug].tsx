@@ -2,7 +2,6 @@ import { useAuthState } from "@/src/context/auth";
 import { Post } from "@/types";
 import { Comment } from "@/types";
 import axios from "axios";
-import classNames from "classnames";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useRouter } from "next/router";

@@ -1,6 +1,6 @@
 import cls from "classnames";
 
-interface InputGroupProps {
+interface IInputGroupProps {
   className?: string;
   type?: string;
   placeholder?: string;
@@ -16,7 +16,7 @@ export default function InputGroup({
   error,
   value,
   setValue,
-}: InputGroupProps) {
+}: IInputGroupProps) {
   return (
     <div className={className}>
       <input

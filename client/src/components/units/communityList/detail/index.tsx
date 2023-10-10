@@ -5,19 +5,24 @@ import useSwR from "swr";
 import { useRef, useState, useEffect, ChangeEvent } from "react";
 import { useAuthState } from "@/src/context/auth";
 import SideBar from "@/src/components/commons/sidebar";
+import { Post } from "@/types";
+import PostCardList from "../../post/cardList/PostCardList.index";
 export default function CommunityDetailList() {
   const [ownSub, setOwnSub] = useState(false);
   const { authenticated, user } = useAuthState();
 
   const router = useRouter();
   const subName = router.query.sub;
-  const { data: sub, error } = useSwR(subName ? `/boards/${subName}` : null);
-
+  const {
+    data: sub,
+    error,
+    mutate,
+  } = useSwR(subName ? `/boards/${subName}` : null);
   // 자신의 글인지 판별 유무
   useEffect(() => {
     if (!sub || !user) return;
     setOwnSub(authenticated && user.username === sub.username);
-  }, [authenticated, sub, user]);
+  }, [sub]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const openFileInput = (type: string) => {
@@ -28,6 +33,20 @@ export default function CommunityDetailList() {
       fileInput.click();
     }
   };
+
+  //포스트 카드 컴포넌트 생성
+  let renderPosts;
+  if (!sub) {
+    renderPosts = <p className="text-lg text-center">로딩중...</p>;
+  } else if (sub.posts.length === 0) {
+    renderPosts = (
+      <p className="text-lg text-center">아직 작성된 포스트가 없습니다.</p>
+    );
+  } else {
+    renderPosts = sub.posts.map((post: Post) => (
+      <PostCardList key={post.identifier} post={post} subMutate={mutate} />
+    ));
+  }
 
   // 이미지 파일 처리
   const uploadImage = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -99,11 +118,10 @@ export default function CommunityDetailList() {
               </div>
             </div>
           </div>
-          {/* 포스트와 사이드바 */}
+          {/* 포스트 & 사이드바 */}
           <div className="flex max-w-5xl px-4 pt-5 mx-auto">
-            <div className="w-full md:mr-3 md:w-8/12">
-              <SideBar sub={sub} />
-            </div>
+            <div className="w-full md:mr-3 md:w-8/12">{renderPosts}</div>
+            <SideBar sub={sub} />
           </div>
         </div>
       )}
