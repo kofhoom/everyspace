@@ -7,8 +7,8 @@ import jwt from "jsonwebtoken"; // 로그인 토큰
 import cookie from "cookie";
 import userMiddleware from "../middlewares/user"; // user 미들웨어
 import authMiddleware from "../middlewares/auth"; // auth 미들웨어
-/* 라우터 설정 */
 
+/* 라우터 설정 */
 // 인증처리
 const me = async (_: Request, res: Response) => {
   return res.json(res.locals.user);
