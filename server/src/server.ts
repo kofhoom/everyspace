@@ -7,6 +7,7 @@ import authRoutes from "./routers/auth";
 import boardRoutes from "./routers/boards";
 import postsRoutes from "./routers/posts";
 import votesRoutes from "./routers/votes";
+import userRoutes from "./routers/users";
 
 import cors from "cors";
 import dotenv from "dotenv";
@@ -30,6 +31,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/boards", boardRoutes);
 app.use("/api/posts", postsRoutes);
 app.use("/api/votes", votesRoutes);
+app.use("/api/users", userRoutes);
 
 app.use(express.static("public")); // 브라우저로 접근 할때 정적파일 제공 허용
 let port = 4000;
