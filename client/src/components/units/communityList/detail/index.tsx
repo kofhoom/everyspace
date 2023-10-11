@@ -61,6 +61,7 @@ export default function CommunityDetailList() {
       await axios.post(`/boards/${sub.name}/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      mutate();
     } catch (error) {
       console.log(error);
     }

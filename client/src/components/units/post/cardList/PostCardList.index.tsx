@@ -81,48 +81,50 @@ export default function PostCardList({
       </div>
       {/* 포스트 데이터 부분 */}
       <div className="w-full p-2">
-        {/* 분기처리 */}
-        {!isInSubPage && (
-          <div className="flex items-center">
-            <Link href={`/r/${subName}`} legacyBehavior>
-              <a>
-                <Image
-                  src={sub!.imageUrl}
-                  alt="sub"
-                  className="rounded-full cursor-pointer"
-                  width={12}
-                  height={12}
-                />
+        <div className="flex items-center justify-between mb-2">
+          {/* 분기처리 */}
+          {!isInSubPage && (
+            <div className="flex items-center">
+              <Link href={`/r/${subName}`} legacyBehavior>
+                <a>
+                  <Image
+                    src={sub!.imageUrl}
+                    alt="sub"
+                    className="rounded-full cursor-pointer"
+                    width={34}
+                    height={34}
+                  />
+                </a>
+              </Link>
+              <Link href={`/r/${subName}`} legacyBehavior>
+                <a className="ml-2 text-xs font-bold cursor-pointer hover:underline">
+                  from {subName}
+                </a>
+              </Link>
+              <span className="mx-l text-xs text-gray-400">·</span>
+            </div>
+          )}
+          <p className="text-xs text-gray-400">
+            posted by
+            <Link href={`/u/${username}`} legacyBehavior>
+              <a className="mx-1 font-bold hover:underline">{username}</a>
+            </Link>
+            <Link href={url} legacyBehavior>
+              <a className="mx-1 hover:underline">
+                {dayjs(createdAt).format("YYYY-MM-DD HH:mm")}
               </a>
             </Link>
-            <Link href={`/r/${subName}`} legacyBehavior>
-              <a className="ml-2 text-xs font-bold cursor-pointer hover:underline">
-                /r/{subName}
-              </a>
-            </Link>
-            <span className="mx-l text-xs text-gray-400">·</span>
-          </div>
-        )}
-        <p className="text-xs text-gray-400">
-          posted by
-          <Link href={`/u/${username}`} legacyBehavior>
-            <a className="mx-1 hover:underline">/u/{username}</a>
-          </Link>
-          <Link href={url} legacyBehavior>
-            <a className="mx-1 hover:underline">
-              {dayjs(createdAt).format("YYYY-MM-DD HH:mm")}
-            </a>
-          </Link>
-        </p>
+          </p>
+        </div>
         <Link href={url} legacyBehavior>
           <a className="my-1 text-lg font-medium">{title}</a>
         </Link>
         {body && <p className="my-1 text-sm">{body}</p>}
-        <div className="flex">
+        <div className="flex items-center mt-2">
           <Link href={url} legacyBehavior>
             <i className="mr-1 fas fa fa-comment-alt fa-xs"></i>
           </Link>
-          <span>{commentCount}ddd</span>
+          <span>댓글 {commentCount} 개</span>
         </div>
       </div>
     </div>

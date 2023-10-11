@@ -15,7 +15,7 @@ export default function BoardCommunityList() {
     <div className="hidden w-4/12 ml-3 md:block">
       <div className="bg-white border rounded">
         <div className="p-4 border-b">
-          <p className="text-lg font-semibold text-center">상위 커뮤니티</p>
+          <p className="text-lg font-semibold text-center">커뮤니티</p>
         </div>
         {/* 포스트 리스트 */}
         <div>
@@ -37,7 +37,7 @@ export default function BoardCommunityList() {
               </Link>
               <Link href={`/r/${sub.name}`} legacyBehavior>
                 <a className="ml-2 font-bold bover:cursor-pointer">
-                  /r/${sub.name}
+                  {sub.name}
                 </a>
               </Link>
               <p className="ml-auto font-med">{sub.postCount}</p>

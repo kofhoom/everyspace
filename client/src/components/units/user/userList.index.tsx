@@ -26,23 +26,23 @@ export default function UserList() {
                 key={comment.identifier}
                 className="flex my-4 bg-white rounded"
               >
-                <div className="flex-shrink-0 w-10 py-10 text-center bg-gray-200 rounded-l">
+                <div className="flex-shrink-0 w-10 py-10 text-center bg-white border-r rounded-l">
                   <i className="text-gray-500 fas fa-comment-alt fa-xs"></i>
                 </div>
                 <div className="w-full p-2">
                   <p className="mb-2 text-xs text-gray-500">
                     <Link href={`/u/${comment.username}`} legacyBehavior>
-                      <a className="cusor-pointer hover:underline">
+                      <a className="cusor-pointer hover:underline mr-1">
                         {comment.username}
                       </a>
                     </Link>
                     <span>command on</span>
                     <Link href={`/u/${comment.post?.url}`} legacyBehavior>
-                      <a className="cusor-pointer font-semibold hover:underline">
+                      <a className="cusor-pointer font-semibold hover:underline mr-1">
                         {comment.post?.title}
                       </a>
                     </Link>
-                    <span>*</span>
+                    <span>·</span>
                     <Link href={`/u/${comment.post?.subName}`} legacyBehavior>
                       <a className="cusor-pointer font-semibold hover:underline">
                         /r/{comment.post?.subName}
@@ -71,7 +71,7 @@ export default function UserList() {
           />
           <p className="pl-2 text-md">{data.user.username}</p>
         </div>
-        <div>
+        <div className="p-2 bg-white rounded-b">
           <p>{dayjs(data.user.createdAt).format("YYYY.MM.DD")}가입</p>
         </div>
       </div>
