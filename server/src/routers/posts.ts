@@ -4,10 +4,55 @@ import authMiddleware from "../middlewares/auth"; // auth 미들웨어
 import Sub from "../entities/Sub";
 import Post from "../entities/Post";
 import Comment from "../entities/Comment";
+import { makeId } from "../utils/helpers";
+import path from "path";
+import multer, { FileFilterCallback } from "multer";
+import { unlinkSync } from "fs";
+import { AppDataSource } from "../data-source";
+
+// 이미지 저장
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: "public/images",
+    filename: (_, file, callback) => {
+      const name = makeId(10);
+      callback(null, name + path.extname(file.originalname));
+    },
+  }),
+  fileFilter: (_, file: any, callback: FileFilterCallback) => {
+    if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+      callback(null, true);
+    } else {
+      callback(new Error("이미지가 아닙니다."));
+    }
+  },
+});
+
+// 이미지 업로드
+const uploadPostImage = async (req: Request, res: Response) => {
+  try {
+    const type = req.body.type;
+    // 파일 유형을 지정치 않았을 시에는 업로드 된 파일 삭제
+    if (type !== "post") {
+      if (!req.file?.path) {
+        return res.status(400).json({ error: "유효하지 않는 파일" });
+      }
+
+      // 파일을 지워주기
+      unlinkSync(req.file.path);
+      return res.status(400).json({ error: "잘못된 유형" });
+    }
+
+    return res.json(req.file?.filename);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+};
 
 // 포스트생성
 const createPost = async (req: Request, res: Response) => {
-  const { title, body, sub } = req.body;
+  const { title, body, sub, imageUrn } = req.body;
   if (title.trim() === "") {
     return res.status(400).json({ title: "제목은 비워둘 수 없습니다." });
   }
@@ -20,11 +65,35 @@ const createPost = async (req: Request, res: Response) => {
     post.body = body;
     post.user = user;
     post.sub = subRecord;
+    post.imageUrn = imageUrn;
 
     await post.save();
     return res.json(post);
   } catch (error) {
     console.log(error);
+    return res.status(500).json({ error: "문제가 발생했습니다." });
+  }
+};
+
+// 포스트 삭제
+const deletePost = async (req: Request, res: Response) => {
+  const { identifier, slug } = req.params;
+
+  try {
+    const post = await Post.findOneByOrFail({ identifier, slug });
+
+    if (!post) {
+      return res.status(404).json({ error: "포스트를 찾을 수 없습니다." });
+    }
+
+    await AppDataSource.createQueryBuilder()
+      .delete()
+      .from(Post)
+      .where("id = :id", { id: post.id })
+      .execute();
+
+    return res.json({ message: "포스트가 성공적으로 삭제되었습니다.", post });
+  } catch (error) {
     return res.status(500).json({ error: "문제가 발생했습니다." });
   }
 };
@@ -108,9 +177,24 @@ const getPostComments = async (req: Request, res: Response) => {
   }
 };
 const router = Router();
-router.get("/:identifier/:slug", userMiddleware, getPost);
+
 router.post("/", userMiddleware, authMiddleware, createPost);
 router.post("/:identifier/:slug/comments", userMiddleware, creatPostComment);
+router.post(
+  "/upload",
+  userMiddleware,
+  authMiddleware,
+  upload.single("file"),
+  uploadPostImage
+);
+router.post(
+  "/:identifier/:slug/delete",
+  userMiddleware,
+  authMiddleware,
+  deletePost
+);
+
+router.get("/:identifier/:slug", userMiddleware, getPost);
 router.get("/:identifier/:slug/comments", userMiddleware, getPostComments);
 router.get("/", userMiddleware, getPosts);
 export default router;

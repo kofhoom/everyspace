@@ -25,11 +25,12 @@ export default function PostCardList({
     url,
     sub,
     username,
+    imageUrl,
   },
   mutate,
   subMutate,
 }: IPostCardProps) {
-  const { authenticated } = useAuthState();
+  const { authenticated, user } = useAuthState();
   const router = useRouter();
   const isInSubPage = router.pathname === "/r/[sub]"; // 분기처리
   const vote = async (value: number) => {
@@ -51,6 +52,7 @@ export default function PostCardList({
       console.log(error);
     }
   };
+  console.log(authenticated, user, "s");
   return (
     <div className="flex mb-4 bg-white rounded" id={identifier}>
       {/* 좋아요 싫어요 기능 부분 */}
@@ -120,6 +122,18 @@ export default function PostCardList({
           <a className="my-1 text-lg font-medium">{title}</a>
         </Link>
         {body && <p className="my-1 text-sm">{body}</p>}
+        {imageUrl && (
+          <div
+            className="h-56"
+            style={{
+              backgroundImage: `url(${imageUrl})`,
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          ></div>
+        )}
+
         <div className="flex items-center mt-2">
           <Link href={url} legacyBehavior>
             <i className="mr-1 fas fa fa-comment-alt fa-xs"></i>

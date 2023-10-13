@@ -36,6 +36,7 @@ export interface Post {
   userVote?: number;
   voteScore?: number;
   commentCount?: number;
+  imageUrl: string;
 }
 
 export interface Comment {

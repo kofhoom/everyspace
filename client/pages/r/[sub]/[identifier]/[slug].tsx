@@ -15,6 +15,16 @@ export default function PostContentPage() {
   const { authenticated, user } = useAuthState();
   const [newComment, setNewComment] = useState("");
 
+  // 포스트 삭제
+
+  const handlePostDelete = async () => {
+    try {
+      await axios.post(`/posts/${post?.identifier}/${post?.slug}/delete`);
+      router.push(`/r/${sub}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   // 포스트 리스트 가져오기
   const {
     data: post,
@@ -91,6 +101,7 @@ export default function PostContentPage() {
                       <FaArrowUp />
                     )}
                   </div>
+
                   <p className="text-xs font-bold">{post.voteScore}</p>
                   {/* 싫어요 */}
                   <div
@@ -104,7 +115,7 @@ export default function PostContentPage() {
                     )}
                   </div>
                 </div>
-                <div className="py-2 pr-2">
+                <div className="py-2 pr-2 w-full">
                   <div className="flex items-center">
                     <p className="text-xs text-gray-400">
                       posted by
@@ -119,9 +130,34 @@ export default function PostContentPage() {
                         </a>
                       </Link>
                     </p>
+                    {user?.username === post?.username && (
+                      <div className="ml-auto">
+                        <span
+                          className="text-xs text-gray-400 mr-2 hover:underline hover:text-gray-500 cursor-pointer"
+                          onClick={handlePostDelete}
+                        >
+                          삭제
+                        </span>
+                        <span className="text-xs text-gray-400 mr-2 hover:underline hover:text-gray-500 cursor-pointer">
+                          수정
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <h1 className="my-1 text-xl font-medium">{post.title}</h1>
                   <p className="my-3 text-sm">{post.body}</p>
+                  {post.imageUrl && (
+                    <div
+                      className="h-56"
+                      style={{
+                        backgroundImage: `url(${post.imageUrl})`,
+                        backgroundRepeat: "no-repeat",
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }}
+                    ></div>
+                  )}
+
                   <div className="flex">
                     <button>
                       <i className="mr-1 fas fa-comment-alt fa-xs"> </i>

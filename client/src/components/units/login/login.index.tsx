@@ -51,6 +51,7 @@ export default function LoginListPage() {
             />
             <InputGroup
               placeholder="Password"
+              type="password"
               value={password}
               setValue={setPassword}
               error={errors.password}

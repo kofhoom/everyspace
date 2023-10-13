@@ -38,6 +38,9 @@ export default class Post extends BaseEntity {
   @Column()
   username: string;
 
+  @Column({ nullable: true })
+  imageUrn: string;
+
   @ManyToOne(() => User, (user) => user.posts)
   @JoinColumn({ name: "username", referencedColumnName: "username" })
   user: User;
@@ -66,6 +69,12 @@ export default class Post extends BaseEntity {
     return this.votes?.reduce((memo, curt) => memo + (curt.value || 0), 0);
   }
 
+  @Expose()
+  get imageUrl(): string {
+    return this.imageUrn
+      ? `${process.env.APP_URL}/images/${this.imageUrn}`
+      : null;
+  }
   protected userVote: number;
 
   setUserVote(user: User) {
