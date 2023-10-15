@@ -30,6 +30,7 @@ export default class Comment extends BaseEntity {
   @JoinColumn({ name: "username", referencedColumnName: "username" })
   user: User;
 
+  @Index()
   @Column()
   postId: number;
 
@@ -37,10 +38,11 @@ export default class Comment extends BaseEntity {
     nullable: false,
     onDelete: "CASCADE",
   })
+  @JoinColumn({ name: "postId", referencedColumnName: "id" })
   post: Post;
 
   @Exclude()
-  @OneToMany(() => Vote, (vote) => vote.comment)
+  @OneToMany(() => Vote, (vote) => vote.comment, { cascade: true })
   votes: Vote[];
 
   protected userVote: number;

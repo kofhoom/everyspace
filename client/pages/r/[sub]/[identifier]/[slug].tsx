@@ -16,7 +16,6 @@ export default function PostContentPage() {
   const [newComment, setNewComment] = useState("");
 
   // 포스트 삭제
-
   const handlePostDelete = async () => {
     try {
       await axios.post(`/posts/${post?.identifier}/${post?.slug}/delete`);
@@ -25,6 +24,7 @@ export default function PostContentPage() {
       console.log(error);
     }
   };
+
   // 포스트 리스트 가져오기
   const {
     data: post,

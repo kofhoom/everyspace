@@ -9,6 +9,7 @@ import path from "path";
 import multer, { FileFilterCallback } from "multer";
 import { unlinkSync } from "fs";
 import { AppDataSource } from "../data-source";
+import Vote from "../entities/Vote";
 
 // 이미지 저장
 const upload = multer({
@@ -81,19 +82,35 @@ const deletePost = async (req: Request, res: Response) => {
 
   try {
     const post = await Post.findOneByOrFail({ identifier, slug });
+    const comments = await Comment.find({
+      where: { postId: post.id },
+    });
 
     if (!post) {
       return res.status(404).json({ error: "포스트를 찾을 수 없습니다." });
     }
-
+    // await AppDataSource.createQueryBuilder()
+    //   .delete()
+    //   .from(Vote)
+    //   .where("postId = :postId", { postId: post.id })
+    //   .execute();
+    // await AppDataSource.createQueryBuilder()
+    //   .delete()
+    //   .from(Comment)
+    //   .where("postId = :postId", { postId: post.id })
+    //   .execute();
+    await Vote.delete({ postId: post.id });
+    await Vote.delete({ commentId: post.id });
     await AppDataSource.createQueryBuilder()
       .delete()
       .from(Post)
       .where("id = :id", { id: post.id })
       .execute();
 
-    return res.json({ message: "포스트가 성공적으로 삭제되었습니다.", post });
+    console.log(post, comments);
+    return res.json({ message: "포스트가 성공적으로 삭제되었습니다." });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ error: "문제가 발생했습니다." });
   }
 };

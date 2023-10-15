@@ -52,7 +52,7 @@ export default function PostCardList({
       console.log(error);
     }
   };
-  console.log(authenticated, user, "s");
+
   return (
     <div className="flex mb-4 bg-white rounded" id={identifier}>
       {/* 좋아요 싫어요 기능 부분 */}
