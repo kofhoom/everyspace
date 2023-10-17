@@ -1,31 +1,57 @@
 import { Request, Response, Router } from "express";
 import { User } from "../entities/User";
 import { isEmpty, validate } from "class-validator";
-import { mapError } from "../utils/helpers";
+import { mapError, uploadImage } from "../utils/helpers";
 import bcrypt from "bcryptjs"; // 비밀번호 암호화
 import jwt from "jsonwebtoken"; // 로그인 토큰
 import cookie from "cookie";
 import userMiddleware from "../middlewares/user"; // user 미들웨어
 import authMiddleware from "../middlewares/auth"; // auth 미들웨어
+import { unlinkSync } from "fs";
 
 /* 라우터 설정 */
+
 // 인증처리
 const me = async (_: Request, res: Response) => {
   return res.json(res.locals.user);
 };
 
+// 이미지 업로드
+const uploadPostImage = async (req: Request, res: Response) => {
+  try {
+    const type = req.body.type;
+    // 파일 유형을 지정치 않았을 시에는 업로드 된 파일 삭제
+    if (type !== "post") {
+      if (!req.file?.path) {
+        return res.status(400).json({ error: "유효하지 않는 파일" });
+      }
+
+      // 파일을 지워주기
+      unlinkSync(req.file.path);
+      return res.status(400).json({ error: "잘못된 유형" });
+    }
+
+    return res.json(req.file?.filename);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
 // 회원가입
 const register = async (req: Request, res: Response) => {
-  const { email, username, password } = req.body;
+  const { email, username, password, imageUrn } = req.body;
 
   try {
     let errors: any = {};
-
+    console.log(imageUrn);
+    if (email.trim() === "") errors.email = "이메일을 입력해 주세요";
     // 이메일과 유저이름이 이미 저장 사용되고 있는 것인지 확인.
     const emailUser = await User.findOneBy({ email });
     const usernameUser = await User.findOneBy({ username });
 
     // 이미 있다면 errors 객체에 넣어줌.
+
     if (emailUser) errors.email = "이미 해당 이메일 주소가 사용되었습니다.";
     if (usernameUser)
       errors.username = "이미 해당 사용자 이름이 사용되었습니다.";
@@ -39,7 +65,7 @@ const register = async (req: Request, res: Response) => {
     user.email = email;
     user.username = username;
     user.password = password;
-
+    user.userImageUrn = imageUrn;
     // 엔티티에 정해 놓은 조건으로 user 데이터의 유효성 검사를 해줌.
     errors = await validate(user);
 
@@ -122,7 +148,9 @@ const logout = async (_: Request, res: Response) => {
 
 const router = Router();
 router.get("/me", userMiddleware, authMiddleware, me);
+router.post("/upload", uploadImage.single("file"), uploadPostImage);
 router.post("/register", register);
+router.post("/register/upload", register);
 router.post("/login", login);
 router.post("/logout", userMiddleware, authMiddleware, logout);
 

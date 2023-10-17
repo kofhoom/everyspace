@@ -1,8 +1,9 @@
 import BoardCommunityList from "@/src/components/units/communityList/BoardCommunityList.index";
 import PostCardList from "@/src/components/units/post/cardList/PostCardList.index";
-import { Post } from "@/types";
+import { Post, User } from "@/types";
 import useSWRInfinite from "swr/infinite";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const getKey = (pageIndex: number, previousPageData: Post[]) => {
@@ -43,7 +44,7 @@ export default function Home() {
       (entries) => {
         // isIntersecting: 관찰 대상의 교차 상태(Boolean)
         if (entries[0].isIntersecting == true) {
-          console.log("마지막 포스트에 왔습니다.");
+          // console.log("마지막 포스트에 왔습니다.");
           setPage(page + 1);
           observer.unobserve(el);
         }
@@ -53,10 +54,14 @@ export default function Home() {
     // 대상 요소의 관찰을 시작
     observer.observe(el);
   };
+
+  const { pathname } = useRouter();
+  const authRoutes = ["/community"];
+  const authRoute = authRoutes.includes(pathname);
   return (
-    <main className="flex max-w-5xl px-4 mx-auto pt-5">
+    <main className="flex max-w-6xl px-4 mx-auto pt-5">
       {/* 포스트 리스트 */}
-      <div className="w-full md:mr-3 md:w-8/12">
+      <div className="w-full layout">
         {isInitialLoading && (
           <p className="text-lg text-center">로딩중입니다.</p>
         )}
@@ -64,9 +69,8 @@ export default function Home() {
           <PostCardList key={post.identifier} post={post} mutate={mutate} />
         ))}
       </div>
-
       {/* 커뮤니티 리스트 */}
-      <BoardCommunityList />
+      {authRoute && <BoardCommunityList />}
     </main>
   );
 }

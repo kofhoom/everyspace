@@ -4,37 +4,41 @@ import authMiddleware from "../middlewares/auth"; // auth 미들웨어
 import Sub from "../entities/Sub";
 import Post from "../entities/Post";
 import Comment from "../entities/Comment";
-import { makeId } from "../utils/helpers";
-import path from "path";
-import multer, { FileFilterCallback } from "multer";
+import { uploadImage, uploadMusic } from "../utils/helpers";
 import { unlinkSync } from "fs";
 import { AppDataSource } from "../data-source";
 import Vote from "../entities/Vote";
 
-// 이미지 저장
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: "public/images",
-    filename: (_, file, callback) => {
-      const name = makeId(10);
-      callback(null, name + path.extname(file.originalname));
-    },
-  }),
-  fileFilter: (_, file: any, callback: FileFilterCallback) => {
-    if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
-      callback(null, true);
-    } else {
-      callback(new Error("이미지가 아닙니다."));
-    }
-  },
-});
-
-// 이미지 업로드
-const uploadPostImage = async (req: Request, res: Response) => {
+// 파일 업로드
+const uploadPostFile = async (req: Request, res: Response) => {
   try {
     const type = req.body.type;
+    console.log(type, "aaa");
     // 파일 유형을 지정치 않았을 시에는 업로드 된 파일 삭제
-    if (type !== "post") {
+    if (type !== "cover") {
+      if (!req.file?.path) {
+        return res.status(400).json({ error: "유효하지 않는 파일" });
+      }
+
+      // 파일을 지워주기
+      unlinkSync(req.file.path);
+      return res.status(400).json({ error: "잘못된 유형2" });
+    }
+
+    return res.json(req.file?.filename);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
+// 파일 업로드
+const uploadPostFile2 = async (req: Request, res: Response) => {
+  try {
+    const type = req.body.type;
+    console.log(type, "aaa");
+    // 파일 유형을 지정치 않았을 시에는 업로드 된 파일 삭제
+    if (type !== "music") {
       if (!req.file?.path) {
         return res.status(400).json({ error: "유효하지 않는 파일" });
       }
@@ -53,20 +57,33 @@ const uploadPostImage = async (req: Request, res: Response) => {
 
 // 포스트생성
 const createPost = async (req: Request, res: Response) => {
-  const { title, body, sub, imageUrn } = req.body;
+  const {
+    title,
+    body,
+    sub,
+    priceChoose,
+    price,
+    musicType,
+    imageUrn,
+    musicFileUrn,
+  } = req.body;
   if (title.trim() === "") {
     return res.status(400).json({ title: "제목은 비워둘 수 없습니다." });
   }
   const user = res.locals.user;
-
+  console.log(user);
   try {
     const subRecord = await Sub.findOneByOrFail({ name: sub });
     const post = new Post();
     post.title = title;
     post.body = body;
     post.user = user;
+    post.priceChoose = priceChoose;
+    post.price = price;
+    post.musicType = musicType;
     post.sub = subRecord;
     post.imageUrn = imageUrn;
+    post.musicFileUrn = musicFileUrn;
 
     await post.save();
     return res.json(post);
@@ -89,16 +106,7 @@ const deletePost = async (req: Request, res: Response) => {
     if (!post) {
       return res.status(404).json({ error: "포스트를 찾을 수 없습니다." });
     }
-    // await AppDataSource.createQueryBuilder()
-    //   .delete()
-    //   .from(Vote)
-    //   .where("postId = :postId", { postId: post.id })
-    //   .execute();
-    // await AppDataSource.createQueryBuilder()
-    //   .delete()
-    //   .from(Comment)
-    //   .where("postId = :postId", { postId: post.id })
-    //   .execute();
+
     await Vote.delete({ postId: post.id });
     await Vote.delete({ commentId: post.id });
     await AppDataSource.createQueryBuilder()
@@ -135,7 +143,7 @@ const getPost = async (req: Request, res: Response) => {
 
 const getPosts = async (req: Request, res: Response) => {
   const currentPage: number = (req.query.page || 0) as number;
-  const perPage: number = (req.query.count || 4) as number;
+  const perPage: number = (req.query.count || 3) as number;
 
   try {
     const posts = await Post.find({
@@ -144,9 +152,11 @@ const getPosts = async (req: Request, res: Response) => {
       skip: currentPage * perPage,
       take: perPage,
     });
+
     if (res.locals.user) {
       posts.forEach((p) => p.setUserVote(res.locals.user));
     }
+
     return res.json(posts);
   } catch (error) {
     console.log(error);
@@ -174,6 +184,7 @@ const creatPostComment = async (req: Request, res: Response) => {
     return res.status(404).json({ error: "게시물을 찾을 수 없습니다." });
   }
 };
+
 // 댓글 가져오기
 const getPostComments = async (req: Request, res: Response) => {
   const { identifier, slug } = req.params;
@@ -184,6 +195,7 @@ const getPostComments = async (req: Request, res: Response) => {
       order: { createdAt: "DESC" },
       relations: ["votes"],
     });
+
     if (res.locals.user) {
       comments.forEach((c) => c.setUserVote(res.locals.user));
     }
@@ -193,25 +205,54 @@ const getPostComments = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "문제가 발생했습니다." });
   }
 };
+
+// 댓글 삭제
+const deleteComments = async (req: Request, res: Response) => {
+  const { identifier, slug } = req.params;
+  try {
+    const post = await Post.findOneByOrFail({ identifier, slug });
+
+    await Comment.delete({ postId: post.id });
+    return res.json({ message: "포스트가 성공적으로 삭제되었습니다." });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "문제가 발생했습니다." });
+  }
+};
+
 const router = Router();
 
 router.post("/", userMiddleware, authMiddleware, createPost);
-router.post("/:identifier/:slug/comments", userMiddleware, creatPostComment);
+router.get("/", userMiddleware, getPosts);
 router.post(
   "/upload",
   userMiddleware,
   authMiddleware,
-  upload.single("file"),
-  uploadPostImage
+  uploadImage.single("file"),
+  uploadPostFile
 );
+router.post(
+  "/music/upload",
+  userMiddleware,
+  authMiddleware,
+  uploadMusic.single("file"),
+  uploadPostFile2
+);
+
 router.post(
   "/:identifier/:slug/delete",
   userMiddleware,
   authMiddleware,
   deletePost
 );
-
 router.get("/:identifier/:slug", userMiddleware, getPost);
+
+router.post("/:identifier/:slug/comments", userMiddleware, creatPostComment);
+router.post(
+  "/:identifier/:slug/comments/delete",
+  userMiddleware,
+  authMiddleware,
+  deleteComments
+);
 router.get("/:identifier/:slug/comments", userMiddleware, getPostComments);
-router.get("/", userMiddleware, getPosts);
 export default router;

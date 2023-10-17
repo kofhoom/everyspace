@@ -1,3 +1,6 @@
+import multer, { FileFilterCallback } from "multer";
+import path from "path";
+
 // 언더바 생성 제너레이터
 export const slugify = function (str) {
   str = str.replace(/^\s+|\s+$/g, ""); // trim
@@ -37,3 +40,64 @@ export const mapError = (errors: Object[]) => {
     return prev;
   }, {});
 };
+
+// 이미지 저장
+export const uploadImage = multer({
+  storage: multer.diskStorage({
+    destination: "public/images",
+    filename: (_, file, callback) => {
+      const name = makeId(10);
+      callback(null, name + path.extname(file.originalname));
+    },
+  }),
+  fileFilter: (_, file: any, callback: FileFilterCallback) => {
+    if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+      callback(null, true);
+    } else {
+      callback(new Error("이미지가 아닙니다."));
+    }
+  },
+});
+
+// 음악 저장
+export const uploadMusic = multer({
+  storage: multer.diskStorage({
+    destination: "public/music",
+    filename: (_, file, callback) => {
+      const name = makeId(10);
+      callback(null, name + path.extname(file.originalname));
+    },
+  }),
+  fileFilter: (_, file: any, callback: FileFilterCallback) => {
+    console.log(file.mimetype);
+    if (file.mimetype === "audio/mpeg" || file.mimetype === "audio/wav") {
+      callback(null, true);
+    } else {
+      callback(new Error("음원파일이 아닙니다."));
+    }
+  },
+});
+export function timeForToday(value: string) {
+  const today = new Date();
+  const timeValue = new Date(value);
+
+  const betweenTime = Math.floor(
+    (today.getTime() - timeValue.getTime()) / 1000 / 60
+  );
+  if (betweenTime < 1) return "방금전";
+  if (betweenTime < 60) {
+    return `${betweenTime}분전`;
+  }
+
+  const betweenTimeHour = Math.floor(betweenTime / 60);
+  if (betweenTimeHour < 24) {
+    return `${betweenTimeHour}시간전`;
+  }
+
+  const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
+  if (betweenTimeDay < 365) {
+    return `${betweenTimeDay}일전`;
+  }
+
+  return `${Math.floor(betweenTimeDay / 365)}년전`;
+}

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { FaSearch } from "react-icons/fa";
 
 export default function NaveBar() {
-  const { loading, authenticated } = useAuthState();
+  const { loading, authenticated, user } = useAuthState();
   const dispatch = useAuthDispatch();
   const handleLogout = () => {
     axios
@@ -19,17 +19,18 @@ export default function NaveBar() {
       });
   };
   return (
-    <div className="fixed inset-x-0 top-0 z-10 flex items-center justify-center justify-between h-13 px-5 bg-white">
+    <div className="fixed inset-x-0 top-0 z-10 flex items-center justify-between h-13 px-5 bg-white border-b">
       <span
         style={{ width: 50 }}
         className="text-2xl font-semibold text-gray-400 inline-block"
       >
         <Link href="/" legacyBehavior>
           <a>
-            <Image src="/logo.png" alt="logo" width={80} height={80} />
+            <Image src="/mlogo.png" alt="logo" width={80} height={80} />
           </a>
         </Link>
       </span>
+      <span className="mr-3 font-extrabold">ORIZIC</span>
       {/* 검색 박스 시작 */}
       <div className="max-w-full pr-4">
         <div className="relative flex items-center bg-gray-100 border rounded hover:border-gray-700 hover:bg-white">
@@ -41,15 +42,44 @@ export default function NaveBar() {
           />
         </div>
       </div>
-      <div className="flex">
+      <div className="ml-auto pr-10">
+        <p className="text-sm font-semibold cursor-pointer">
+          <Link href={`/community`} legacyBehavior>
+            <a className="text-xs">커뮤니티</a>
+          </Link>
+        </p>
+      </div>
+      <div className="flex items-center">
         {!loading &&
           (authenticated ? (
-            <button
-              className="w-20 px-2 mr-2 text-sm h-7 text-center text-white bg-gray-400 rounded"
-              onClick={handleLogout}
-            >
-              로그아웃
-            </button>
+            <>
+              <Link href={`/u/${user!.username}`} legacyBehavior>
+                <a className="flex justify-center items-center w-8 h-8 border border-gray-300 rounded-full overflow-hidden mr-2">
+                  <Image
+                    key={user!.username}
+                    src={user!.userImageUrl}
+                    alt="sub"
+                    className="rounded-full cursor-pointer border-gray-200"
+                    width={34}
+                    height={34}
+                  />
+                </a>
+              </Link>
+              <p className="text-xs mr-2">
+                <b>{user?.username}</b>님 환영합니다.
+              </p>
+              <button className="w-21 px-2 mr-2 text-sm h-7 text-center text-white bg-black rounded">
+                <Link href={`/u/${user!.username}`} legacyBehavior>
+                  <a className="text-xs">마이 페이지</a>
+                </Link>
+              </button>
+              <button
+                className="w-20 px-2 mr-2 text-xs h-7 text-center text-white bg-gray-400 rounded"
+                onClick={handleLogout}
+              >
+                로그아웃
+              </button>
+            </>
           ) : (
             <>
               <Link href="/login" legacyBehavior>

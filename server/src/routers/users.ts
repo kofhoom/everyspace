@@ -3,7 +3,18 @@ import userMiddleware from "../middlewares/user"; // user 미들웨어
 import { User } from "../entities/User";
 import Post from "../entities/Post";
 import Comment from "../entities/Comment";
+import { AppDataSource } from "../data-source";
 const router = Router();
+const getUsersData = async (req: Request, res: Response) => {
+  try {
+    // 유져정보 가져오기
+    const user = await User.find();
+
+    return res.json(user);
+  } catch (error) {
+    console.log(error);
+  }
+};
 const getUserData = async (req: Request, res: Response) => {
   try {
     // 유져정보 가져오기
@@ -47,5 +58,6 @@ const getUserData = async (req: Request, res: Response) => {
   }
 };
 router.get("/:username", userMiddleware, getUserData);
+router.get("/", getUsersData);
 
 export default router;

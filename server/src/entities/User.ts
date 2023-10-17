@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import Post from "./Post";
 import Vote from "./Vote";
 import BaseEntity from "./Entity";
+import { Expose } from "class-transformer";
 
 @Entity("users")
 export class User extends BaseEntity {
@@ -22,12 +23,23 @@ export class User extends BaseEntity {
   @Length(6, 255, { message: "비밀번호는 6자리 이상이어야 합니다." })
   password: string;
 
+  @Column({ unique: true, nullable: true })
+  userImageUrn: string;
+
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
 
   @OneToMany(() => Vote, (vote) => vote.user)
   votes: Vote[];
 
+  @Expose()
+  get userImageUrl(): string {
+    return this.userImageUrn
+      ? `${process.env.APP_URL}/images/${this.userImageUrn}`
+      : "https://www.gravatar.com/avatar?d=mp&f=y";
+  }
+
+  protected userVote: number;
   @BeforeInsert()
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 6);

@@ -5,9 +5,10 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FormEvent, useState } from "react";
-import useSwR from "swr";
+import { FormEvent, useState, useRef, useEffect } from "react";
+import useSwR, { mutate } from "swr";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
+import AudioLayout from "@/src/components/commons/audio";
 
 export default function PostContentPage() {
   const router = useRouter();
@@ -31,6 +32,8 @@ export default function PostContentPage() {
     error,
     mutate: postMutate,
   } = useSwR<Post>(identifier && slug ? `/posts/${identifier}/${slug}` : null);
+
+  const isOwnUser = user?.username === post?.username; // 자신 글 & 댓글 여부
 
   // 포스트 댓글 가져오기
   const { data: comments, mutate: commentMutate } = useSwR<Comment[]>(
@@ -81,6 +84,18 @@ export default function PostContentPage() {
     }
   };
 
+  // 댓글 삭제
+  const handleCommentDelete = async () => {
+    try {
+      await axios.post(
+        `/posts/${post?.identifier}/${post?.slug}/comments/delete/`
+      );
+      router.push(`/r/${sub}/${post?.identifier}/${post?.slug}/`);
+      commentMutate();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="flex max-w-5xl px-4 pt-5 mx-auto">
       <div className="w-full md:mr-3 md:w-8/12">
@@ -130,7 +145,7 @@ export default function PostContentPage() {
                         </a>
                       </Link>
                     </p>
-                    {user?.username === post?.username && (
+                    {isOwnUser && (
                       <div className="ml-auto">
                         <span
                           className="text-xs text-gray-400 mr-2 hover:underline hover:text-gray-500 cursor-pointer"
@@ -144,8 +159,7 @@ export default function PostContentPage() {
                       </div>
                     )}
                   </div>
-                  <h1 className="my-1 text-xl font-medium">{post.title}</h1>
-                  <p className="my-3 text-sm">{post.body}</p>
+
                   {post.imageUrl && (
                     <div
                       className="h-56"
@@ -157,7 +171,18 @@ export default function PostContentPage() {
                       }}
                     ></div>
                   )}
-
+                  <h1 className="my-1 text-xl font-medium">{post.title}</h1>
+                  <h1 className="my-1 text-xl font-medium">
+                    {post.price + "원"}
+                  </h1>
+                  <h1 className="my-1 text-xl font-medium">
+                    {post.priceChoose}
+                  </h1>
+                  <h1 className="my-1 text-xl font-medium">
+                    <AudioLayout audioUrl={post.musicFileUrl} />
+                  </h1>
+                  <h1 className="my-1 text-xl font-medium">{post.musicType}</h1>
+                  <p className="my-3 text-sm">{post.body}</p>
                   <div className="flex">
                     <button>
                       <i className="mr-1 fas fa-comment-alt fa-xs"> </i>
@@ -170,7 +195,7 @@ export default function PostContentPage() {
               </div>
 
               {/* 댓글 작성 구간 */}
-              <div className="pr-6 mb-4 pl-9">
+              <div className="pr-6 mb-4 pl-9 pb-3">
                 {authenticated ? (
                   <div>
                     <p className="mb-1 text-xs">
@@ -187,7 +212,7 @@ export default function PostContentPage() {
                         onChange={(e) => setNewComment(e.target.value)}
                         value={newComment}
                       ></textarea>
-                      <div className="flex justify-end">
+                      <div className="flex justify-end mt-1">
                         <button
                           className="px-3 py-1 text-white bg-gray-400 rounded"
                           disabled={newComment.trim() === ""}
@@ -241,19 +266,32 @@ export default function PostContentPage() {
                       )}
                     </div>
                   </div>
-                  <div className="py-2 pr-2">
-                    <p className="mb-1 text-xs leading-none">
-                      <Link href={`/u/${comment.username}`} legacyBehavior>
-                        <a className="mr-1 font-bold hover:underline">
-                          {comment.username}
-                        </a>
-                      </Link>
-                      <span className="text-gray-600">
-                        {`${comment.voteScore} posts ${dayjs(
-                          comment.createdAt
-                        ).format("YYYY-MM-DD HH:mm")}`}
-                      </span>
-                    </p>
+                  <div className="py-2 pr-2 w-full">
+                    <div className="flex items-center mb-1">
+                      <p className=" text-xs leading-none">
+                        <Link href={`/u/${comment.username}`} legacyBehavior>
+                          <a className="mr-1 font-bold hover:underline">
+                            {comment.username}
+                          </a>
+                        </Link>
+                        <span className="text-gray-600">
+                          {`${comment.voteScore} posts ${dayjs(
+                            comment.createdAt
+                          ).format("YYYY-MM-DD HH:mm")}`}
+                        </span>
+                      </p>
+                      {/* 댓글 삭제 */}
+                      {isOwnUser && (
+                        <div className="ml-auto">
+                          <span
+                            className="text-xs text-gray-400 mr-2 hover:underline hover:text-gray-500 cursor-pointer"
+                            onClick={handleCommentDelete}
+                          >
+                            삭제
+                          </span>
+                        </div>
+                      )}
+                    </div>
                     <p>{comment.body}</p>
                   </div>
                 </div>

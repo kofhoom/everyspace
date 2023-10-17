@@ -25,6 +25,15 @@ export default class Post extends BaseEntity {
   @Column()
   title: string;
 
+  @Column({ nullable: true })
+  priceChoose: string;
+
+  @Column({ nullable: true })
+  price: number;
+
+  @Column({ nullable: true })
+  musicType: string;
+
   @Index()
   @Column()
   slug: string;
@@ -40,6 +49,12 @@ export default class Post extends BaseEntity {
 
   @Column({ nullable: true })
   imageUrn: string;
+
+  @Column({ nullable: true })
+  musicFileUrn: string;
+
+  @Column({ nullable: true })
+  userImage: string;
 
   @ManyToOne(() => User, (user) => user.posts)
   @JoinColumn({ name: "username", referencedColumnName: "username" })
@@ -79,6 +94,14 @@ export default class Post extends BaseEntity {
       ? `${process.env.APP_URL}/images/${this.imageUrn}`
       : null;
   }
+
+  @Expose()
+  get musicFileUrl(): string {
+    return this.musicFileUrn
+      ? `${process.env.APP_URL}/music/${this.musicFileUrn}`
+      : null;
+  }
+
   protected userVote: number;
 
   setUserVote(user: User) {

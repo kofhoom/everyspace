@@ -5,7 +5,7 @@ import useSwR from "swr";
 import { useRef, useState, useEffect, ChangeEvent } from "react";
 import { useAuthState } from "@/src/context/auth";
 import SideBar from "@/src/components/commons/sidebar";
-import { Post } from "@/types";
+import { Post, User } from "@/types";
 import PostCardList from "../../post/cardList/PostCardList.index";
 export default function CommunityDetailList() {
   const [ownSub, setOwnSub] = useState(false);
@@ -18,11 +18,12 @@ export default function CommunityDetailList() {
     error,
     mutate,
   } = useSwR(subName ? `/boards/${subName}` : null);
+
   // 자신의 글인지 판별 유무
   useEffect(() => {
     if (!sub || !user) return;
     setOwnSub(authenticated && user.username === sub.username);
-  }, [sub]);
+  }, [authenticated, sub, user]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const openFileInput = (type: string) => {

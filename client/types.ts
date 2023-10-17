@@ -1,6 +1,8 @@
 export interface User {
   username: string;
   email: string;
+  userImageUrn: string;
+  userImageUrl: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -31,12 +33,16 @@ export interface Post {
   createdAt: string;
   updatedAt: string;
   sub?: Sub;
-
+  userImage: string;
   url: string;
   userVote?: number;
   voteScore?: number;
   commentCount?: number;
   imageUrl: string;
+  price: string;
+  musicType: string;
+  priceChoose: string;
+  musicFileUrl: string;
 }
 
 export interface Comment {
