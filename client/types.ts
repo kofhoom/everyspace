@@ -5,6 +5,8 @@ export interface User {
   userImageUrl: string;
   createdAt: string;
   updatedAt: string;
+  approvalRequsts: any[];
+  isApproved: Boolean;
 }
 
 export interface Sub {
@@ -21,6 +23,8 @@ export interface Sub {
 
   imageUrl: string;
   bannerUrl: string;
+  subMember: User[];
+  subMemberCount: number;
 }
 
 export interface Post {
@@ -39,7 +43,7 @@ export interface Post {
   voteScore?: number;
   commentCount?: number;
   imageUrl: string;
-  price: string;
+  price: number;
   musicType: string;
   priceChoose: string;
   musicFileUrl: string;

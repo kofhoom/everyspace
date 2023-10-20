@@ -43,11 +43,22 @@ export default function NaveBar() {
         </div>
       </div>
       <div className="ml-auto pr-10">
-        <p className="text-sm font-semibold cursor-pointer">
-          <Link href={`/community`} legacyBehavior>
-            <a className="text-xs">커뮤니티</a>
-          </Link>
-        </p>
+        <ul className="flex items-center">
+          <li className="text-sm font-semibold cursor-pointer mr-3">
+            <Link href={`/community`} legacyBehavior>
+              <a className="text-xs">아지트</a>
+            </Link>
+          </li>
+          <li className="text-sm  cursor-pointer mr-2">
+            <button className="w-20 px-2 text-xs h-7 text-center font-normal border-gray-300 hover:border-black hover:font-semibold transition rounded border ">
+              <Link href={`/create`} legacyBehavior>
+                <a className="flex justify-center items-center w-full h-full text-xs text-gray-30">
+                  업로드
+                </a>
+              </Link>
+            </button>
+          </li>
+        </ul>
       </div>
       <div className="flex items-center">
         {!loading &&
@@ -65,7 +76,7 @@ export default function NaveBar() {
                   />
                 </a>
               </Link>
-              <p className="text-xs mr-2">
+              <p className="text-xs mr-4">
                 <b>{user?.username}</b>님 환영합니다.
               </p>
               <button className="w-21 px-2 mr-2 text-sm h-7 text-center text-white bg-black rounded">

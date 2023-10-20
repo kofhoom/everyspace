@@ -13,7 +13,6 @@ import Vote from "../entities/Vote";
 const uploadPostFile = async (req: Request, res: Response) => {
   try {
     const type = req.body.type;
-    console.log(type, "aaa");
     // 파일 유형을 지정치 않았을 시에는 업로드 된 파일 삭제
     if (type !== "cover") {
       if (!req.file?.path) {
@@ -36,7 +35,6 @@ const uploadPostFile = async (req: Request, res: Response) => {
 const uploadPostFile2 = async (req: Request, res: Response) => {
   try {
     const type = req.body.type;
-    console.log(type, "aaa");
     // 파일 유형을 지정치 않았을 시에는 업로드 된 파일 삭제
     if (type !== "music") {
       if (!req.file?.path) {

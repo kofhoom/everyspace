@@ -1,9 +1,13 @@
+import { useAuthState } from "@/src/context/auth";
+import { formatTime } from "@/utils/helpers";
 import React, { useRef, useState, useEffect } from "react";
 import { FaStop } from "react-icons/fa";
 import { FaPlay } from "react-icons/fa6";
+
 interface AudioProps {
   audioUrl: string;
 }
+
 const AudioLayout = ({ audioUrl }: AudioProps) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressRef = useRef<HTMLDivElement | null>(null);
@@ -11,7 +15,7 @@ const AudioLayout = ({ audioUrl }: AudioProps) => {
   const [play, setPlay] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-
+  const { authenticated } = useAuthState();
   useEffect(() => {
     const audio = audioRef.current;
     if (audio) {
@@ -72,23 +76,15 @@ const AudioLayout = ({ audioUrl }: AudioProps) => {
     }
   };
 
-  const formatTime = (timeInSeconds: number) => {
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = Math.floor(timeInSeconds % 60);
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
-      2,
-      "0"
-    )}`;
-  };
-
   return (
-    <div>
+    <div className="mb-3 border border-#e5e7eb rounded p-4 relative">
       <audio
         controls
         src={audioUrl}
         controlsList="nodownload"
         ref={audioRef}
         hidden
+        preload="auto"
       ></audio>
       <div className="flex items-center">
         <button onClick={handleClick}>
@@ -109,10 +105,15 @@ const AudioLayout = ({ audioUrl }: AudioProps) => {
           ></div>
         </div>
       </div>
-      <div className="flex justify-between">
-        <span className="text-sm font-semibold">{formatTime(currentTime)}</span>
-        <span className="text-sm font-semibold">{formatTime(duration)}</span>
+      <div className="flex justify-between" style={{ paddingLeft: "26px" }}>
+        <span className="text-xs font-semibold">{formatTime(currentTime)}</span>
+        <span className="text-xs font-semibold">{formatTime(duration)}</span>
       </div>
+      {!authenticated && (
+        <div className="absolute top-0 left-0 bg-gray-300 bg-opacity-50  h-full w-full flex justify-center items-center">
+          <p className="font-medium text-sm">로그인 후 이용 가능합니다.</p>
+        </div>
+      )}
     </div>
   );
 };

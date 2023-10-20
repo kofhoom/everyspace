@@ -15,6 +15,7 @@ import Sub from "./Sub";
 import { User } from "./User";
 import Vote from "./Vote";
 import { slugify } from "transliteration"; // 한글명 처리
+import { Length } from "class-validator";
 
 @Entity("posts")
 export default class Post extends BaseEntity {
@@ -28,6 +29,7 @@ export default class Post extends BaseEntity {
   @Column({ nullable: true })
   priceChoose: string;
 
+  @Length(3, 8, { message: "가격은 최소 100원 이상 입니다." })
   @Column({ nullable: true })
   price: number;
 
@@ -41,7 +43,7 @@ export default class Post extends BaseEntity {
   @Column({ nullable: true, type: "text" })
   body: string;
 
-  @Column()
+  @Column({ nullable: true })
   subName: string;
 
   @Column()

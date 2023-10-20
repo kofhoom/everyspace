@@ -23,7 +23,7 @@ export default function Home() {
   const posts: Post[] = data ? ([] as Post[]).concat(...data) : [];
 
   const [observePost, setObservedPost] = useState("");
-
+  console.log(posts);
   useEffect(() => {
     // 포스트가 없다면 return
     if (!posts || posts.length === 0) return;

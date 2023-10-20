@@ -33,6 +33,9 @@ export default class Sub extends BaseEntity {
   @Column()
   username: string;
 
+  @Column("simple-array", { nullable: true })
+  subMember: any[];
+
   @ManyToOne(() => User)
   @JoinColumn({ name: "username", referencedColumnName: "username" })
   user: User;
@@ -52,5 +55,9 @@ export default class Sub extends BaseEntity {
     return this.bannerUrn
       ? `${process.env.APP_URL}/images/${this.bannerUrn}`
       : undefined;
+  }
+
+  @Expose() get subMemberCount(): number {
+    return this.subMember?.length;
   }
 }

@@ -26,6 +26,12 @@ export class User extends BaseEntity {
   @Column({ unique: true, nullable: true })
   userImageUrn: string;
 
+  @Column({ nullable: true })
+  isApproved: Boolean;
+
+  @Column("simple-array", { nullable: true })
+  approvalRequsts: any[];
+
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
 

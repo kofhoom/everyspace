@@ -8,6 +8,7 @@ import cookie from "cookie";
 import userMiddleware from "../middlewares/user"; // user 미들웨어
 import authMiddleware from "../middlewares/auth"; // auth 미들웨어
 import { unlinkSync } from "fs";
+import Sub from "../entities/Sub";
 
 /* 라우터 설정 */
 
@@ -66,6 +67,8 @@ const register = async (req: Request, res: Response) => {
     user.username = username;
     user.password = password;
     user.userImageUrn = imageUrn;
+    user.isApproved = false;
+    user.approvalRequsts = [];
     // 엔티티에 정해 놓은 조건으로 user 데이터의 유효성 검사를 해줌.
     errors = await validate(user);
 
@@ -146,6 +149,74 @@ const logout = async (_: Request, res: Response) => {
   res.status(200).json({ success: true });
 };
 
+// 승인요청 보내기
+const requestApproval = async (req: Request, res: Response) => {
+  const username = req.params.userId;
+  const requesterUserIds = req.body.requesterUserId;
+
+  try {
+    const user = await User.findOneByOrFail({ username });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (res.locals.user) {
+      const approvalSameCheck = user.approvalRequsts.some(
+        (el) => el === requesterUserIds
+      );
+      if (approvalSameCheck)
+        return res.status(404).json({ message: "이미 가입 신청 하였습니다." });
+    }
+    user.approvalRequsts.push(requesterUserIds);
+
+    await user.save();
+    // console.log(user, "asdasd");
+    return res.json({ message: "Approval request sent", user });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ message: "Error sending approval request", error });
+  }
+};
+
+// 승인 수락
+const approval = async (req: Request, res: Response) => {
+  const username = req.params.userId;
+  console.log(username, "유저네임");
+
+  try {
+    const user: User = res.locals.user;
+    // const user = await User.findOneByOrFail({ username });
+    const sub = await Sub.findOneByOrFail({ username: user.username });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user) {
+      // 승인 처리: isApproved 값을 true로 설정
+      user.isApproved = true;
+
+      // 승인 요청 목록에서 요청을 삭제
+      user.approvalRequsts = user.approvalRequsts.filter(
+        (requesterId) => requesterId !== username
+      );
+    }
+
+    sub.subMember.push(username);
+    console.log(sub);
+
+    await sub.save();
+    await user.save();
+
+    return res.json({ message: "User approved" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error approving user" });
+  }
+};
+
 const router = Router();
 router.get("/me", userMiddleware, authMiddleware, me);
 router.post("/upload", uploadImage.single("file"), uploadPostImage);
@@ -153,5 +224,6 @@ router.post("/register", register);
 router.post("/register/upload", register);
 router.post("/login", login);
 router.post("/logout", userMiddleware, authMiddleware, logout);
-
+router.put("/:userId/request-approval", userMiddleware, requestApproval);
+router.put("/:userId/approve", userMiddleware, approval);
 export default router;

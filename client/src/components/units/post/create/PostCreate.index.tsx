@@ -118,7 +118,12 @@ export default function PostCreateList() {
   const [musicName, setMusicName] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
-  const { sub: subName } = router.query;
+  let { sub: subName } = router.query;
+
+  if (router.pathname === "/create" && !subName) {
+    subName = "nomal";
+  }
+  console.log(subName);
 
   const openFileInput = (type: string) => {
     const fileInputRefs: any = type === "cover" ? fileInputRef : fileInputRef2;
@@ -131,10 +136,19 @@ export default function PostCreateList() {
     const file = event.target.files[0];
 
     if (event.target.id === "cover") {
+      if (file?.type === "audio/mpeg" || file?.type === "audio/wav") {
+        window.alert("유요한 파일이 아닙니다.");
+        return false;
+      }
       const fileName = URL.createObjectURL(file);
       setImgUrl(fileName);
     } else {
+      if (file?.type === "image/png" || file?.type === "image/jpeg") {
+        window.alert("유요한 파일이 아닙니다.");
+        return false;
+      }
       setMusicName(file.name);
+      setTitle(file.name);
     }
   };
 
@@ -154,6 +168,7 @@ export default function PostCreateList() {
     if (fileInput?.files && fileInput2?.files) {
       const formData = new FormData();
       const formData2 = new FormData();
+
       formData.append("file", fileInput.files[0]);
       formData.append("type", fileInput.name);
 
@@ -176,7 +191,7 @@ export default function PostCreateList() {
         const { data: post } = await axios.post<Post>("/posts", {
           title: title.trim(),
           priceChoose,
-          price,
+          price: Number(price),
           musicType,
           body,
           sub: subName,
@@ -271,7 +286,7 @@ export default function PostCreateList() {
                   option={ageData}
                 />
               </div>
-              <div className="flex items-start flex-col">
+              <div className="flex items-start flex-col relative">
                 <p className="text-sm mb-2 font-semibold">내용: </p>
                 <textarea
                   rows={4}
@@ -281,7 +296,7 @@ export default function PostCreateList() {
                   onChange={(e) => setBody(e.target.value)}
                 />
                 <div
-                  style={{ top: 10, right: 10 }}
+                  style={{ top: 43, right: 10 }}
                   className="absolute mb-2 text-sm text-gray-400 select-none"
                 >
                   {title.trim().length}/20

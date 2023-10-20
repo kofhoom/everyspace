@@ -43,6 +43,7 @@ const createBoard = async (req: Request, res: Response, next) => {
     sub.title = title;
     sub.description = description;
     sub.user = user;
+    sub.subMember = [];
     await sub.save();
 
     // 저장한 정보 프론트엔드로 전달해주기
@@ -57,15 +58,16 @@ const topSubs = async (_: Request, res: Response) => {
     const imageUrlExp = `COALESCE('${process.env.APP_URL}/images/' ||s."imageUrn",'https://www.gravatar.com/avatar?d=mp&f=y')`;
     const subs = await AppDataSource.createQueryBuilder()
       .select(
-        `s.title, s.name, ${imageUrlExp} as "imageUrl", count(p.id) as "postCount"`
+        `s.title, s.name, s.username, ${imageUrlExp} as "imageUrl", count(p.id) as "postCount"`
       )
       .from(Sub, "s")
       .leftJoin(Post, "p", `s.name = p."subName"`)
-      .groupBy('s.title, s.name, "imageUrl"')
+      .groupBy('s.title, s.name, s.username, "imageUrl"')
       .orderBy(`"postCount"`, "DESC")
-      .limit(5)
+      .limit(12)
       .execute();
     console.log(subs);
+
     return res.json(subs);
   } catch (error) {
     return res.status(500).json({ error: "문제가 발생했습니다." });

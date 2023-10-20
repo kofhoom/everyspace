@@ -68,7 +68,23 @@
     url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Black.otf)
       format("opentype");
 }
+.ant-btn-primary {
+  background: white;
+  color: black;
+  border-color: #d9d9d9;
+}
+.ant-btn-compact-item.ant-btn-primary:not([disabled])
+  + .ant-btn-compact-item.ant-btn-primary:not([disabled]):before {
+  background: #d9d9d9;
+  color: black;
+  border-color: #d9d9d9 !important;
+}
 
+.ant-btn-primary:hover {
+  background: white !important;
+  color: black !important;
+  border-color: black;
+}
 * {
   box-sizing: border-box;
   padding: 0;
@@ -84,6 +100,10 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(calc(50% - 10px), auto));
   gap: 10px;
+}
+
+.font-13 {
+  font-size: 13px;
 }
 
 html,

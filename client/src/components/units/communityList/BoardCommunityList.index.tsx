@@ -2,20 +2,29 @@ import { useAuthState } from "@/src/context/auth";
 import { Sub } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import useSwR from "swr";
 // 메인 사이드바
 export default function BoardCommunityList() {
-  const { authenticated } = useAuthState();
-
+  const { authenticated, user } = useAuthState();
+  const router = useRouter();
   const address = "http://localhost:4000/api/boards/sub/topSubs";
 
   const { data: topSubs } = useSwR<Sub[]>(address);
+
+  const createMovePageHandleler = () => {
+    const checkCommunityMake = topSubs?.some(
+      (el) => el.username === user?.username
+    );
+    if (checkCommunityMake) window.alert("아지트 생성은 1개만 가능합니다.");
+    else router.push("/boards/new");
+  };
 
   return (
     <div className="hidden w-4/12 ml-3 md:block">
       <div className="bg-white border rounded">
         <div className="p-4 border-b">
-          <p className="text-lg font-semibold text-center">커뮤니티</p>
+          <p className="text-lg font-semibold text-center">아지트</p>
         </div>
         {/* 포스트 리스트 */}
         <div>
@@ -45,12 +54,11 @@ export default function BoardCommunityList() {
           ))}
         </div>
         {authenticated && (
-          <div className="w-full py-6 text-center">
-            <Link href="/boards/new" legacyBehavior>
-              <a className="w-full p-2 text-white bg-gray-400 rounded">
-                커뮤니티 만들기
-              </a>
-            </Link>
+          <div
+            className="max-w-fit m-auto my-5 px-2.5 py-1 text-sm cursor-pointer font-normal border-gray-300 hover:border-black hover:font-semibold transition rounded border"
+            onClick={createMovePageHandleler}
+          >
+            아지트 생성
           </div>
         )}
       </div>

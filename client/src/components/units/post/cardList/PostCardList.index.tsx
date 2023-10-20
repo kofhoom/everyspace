@@ -1,4 +1,4 @@
-import { FaArrowUp, FaArrowDown, FaHotjar } from "react-icons/fa";
+import { FaHotjar } from "react-icons/fa";
 import { Post, User } from "@/types";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import useSwR from "swr";
 import { timeForToday } from "@/utils/helpers";
 import AudioLayout from "@/src/components/commons/audio";
+import { Tag } from "antd";
 interface IPostCardProps {
   post: Post;
   subMutate?: () => void;
@@ -18,7 +19,6 @@ export default function PostCardList({
     identifier,
     slug,
     title,
-    body,
     subName,
     createdAt,
     voteScore,
@@ -29,6 +29,9 @@ export default function PostCardList({
     username,
     imageUrl,
     musicFileUrl,
+    musicType,
+    price,
+    priceChoose,
   },
   mutate,
   subMutate,
@@ -37,8 +40,6 @@ export default function PostCardList({
 
   const router = useRouter();
 
-  const authRoutes = ["/"];
-  const authRoute = authRoutes.includes(router.pathname);
   const isInSubPage = router.pathname === "/r/[sub]"; // 분기처리
   const vote = async (value: number) => {
     if (!authenticated) router.push("/login");
@@ -84,39 +85,25 @@ export default function PostCardList({
             )}
           </div>
         </div>
-        {/* 싫어요 */}
-        {/* <div
-          className="flex justify-center w-6 mx-auto text-gray-400 rounded cursor-pointer hover:bg-gray-300 hover:text-blue-500"
-          onClick={() => vote(-1)}
-        >
-          {userVote === -1 ? (
-            <FaArrowDown className="mx-auto text-blue-500" />
-          ) : (
-            <FaArrowDown />
-          )}
-        </div> */}
       </div>
-      {/* 좋아요 싫어요 기능 부분 */}
-
       {/* 포스트 데이터 부분 */}
-      <div className="w-full p-2">
-        <div className="flex items-center justify-between mb-2">
+      <div className="w-full p-4">
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-b-#e5e7eb">
           <div className="flex items-center">
             <Link href={`/r/${subName}`} legacyBehavior>
               <a className="flex justify-center items-center w-10 h-10 border border-gray-300 rounded-full overflow-hidden mr-1">
-                {users?.map((el: User) =>
-                  el.username === username ? (
-                    <Image
-                      key={el.username}
-                      src={el.userImageUrl}
-                      alt="sub"
-                      className="rounded-full cursor-pointer border-gray-200"
-                      width={34}
-                      height={34}
-                    />
-                  ) : (
-                    ""
-                  )
+                {users?.map(
+                  (el: User) =>
+                    el.username === username && (
+                      <Image
+                        key={el.username}
+                        src={el.userImageUrl}
+                        alt="sub"
+                        className="rounded-full cursor-pointer border-gray-200"
+                        width={34}
+                        height={34}
+                      />
+                    )
                 )}
               </a>
             </Link>
@@ -128,7 +115,7 @@ export default function PostCardList({
           </div>
           {/* 분기처리 */}
           <div className="flex items-center">
-            {!isInSubPage && (
+            {!isInSubPage && subName !== "nomal" && (
               <>
                 <Link href={`/r/${subName}`} legacyBehavior>
                   <a>
@@ -146,27 +133,50 @@ export default function PostCardList({
                     from {subName}
                   </a>
                 </Link>
-                {/* <span className="mx-l text-xs text-gray-400">·</span> */}
               </>
             )}
           </div>
         </div>
 
-        {imageUrl && (
+        {imageUrl ? (
           <div
-            className="h-56"
+            className="w-72 h-72 m-auto rounded-md"
             style={{
               backgroundImage: `url(${imageUrl})`,
               backgroundRepeat: "no-repeat",
               backgroundSize: "cover",
               backgroundPosition: "center",
+              border: "1px solid #e5e7eb",
             }}
           ></div>
+        ) : (
+          <div className="h-80"></div>
         )}
         <Link href={url} legacyBehavior>
-          <a className="my-1 text-lg font-medium">{title}</a>
+          <a className="w-full inline-block text-xl font-medium my-4 mb-5 pb-3 border-b border-b-#e5e7eb">
+            {title}
+          </a>
         </Link>
-        {body && <p className="my-1 text-sm">{body}</p>}
+        <div className="text-xm">
+          <div className="flex items-center font-13">
+            장르:{" "}
+            <Tag color="black" className="ml-2" style={{ fontSize: "inherit" }}>
+              {musicType}
+            </Tag>
+          </div>
+        </div>
+
+        <div className="mb-4 text-xm font-13">
+          <p>
+            가격:{" "}
+            <span className="inline-block mt-1 ml-2">
+              {priceChoose === "free"
+                ? "무료"
+                : "₩" +
+                  [price].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+            </span>{" "}
+          </p>
+        </div>
         {musicFileUrl && <AudioLayout audioUrl={musicFileUrl} />}
         <div className="flex items-center mt-2">
           <Link href={url} legacyBehavior>

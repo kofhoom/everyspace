@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { MouseEvent } from "react";
 
 export function timeForToday(value: string) {
   const today = new Date();
@@ -26,3 +27,23 @@ export function timeForToday(value: string) {
 
   return `${Math.floor(betweenTimeDay / 365)}년전`;
 }
+
+export const formatTime = (timeInSeconds: number) => {
+  const minutes = Math.floor(timeInSeconds / 60);
+  const seconds = Math.floor(timeInSeconds % 60);
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+    2,
+    "0"
+  )}`;
+};
+
+// 링크복사
+
+export const handleCopyClipBoard = (text: string) => async (e: MouseEvent) => {
+  try {
+    await navigator.clipboard.writeText(text);
+    alert("클립보드에 링크가 복사되었어요.");
+  } catch (err) {
+    console.log(err);
+  }
+};
