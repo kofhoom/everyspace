@@ -62,9 +62,11 @@ export default function PostCardList({
   };
 
   const { data: users, error: getUserError } = useSwR(`/users/`);
+
+  console.log(sub);
   return (
     <div
-      className="flex mb-4 bg-white rounded-md shadow-md flex-col-reverse"
+      className="flex mb-4 bg-white rounded-lg shadow-md flex-col-reverse hover:shadow-xl transition-shadow"
       id={identifier}
     >
       <div className="flex flex-shrink-0 p-2 text-center justify-between">

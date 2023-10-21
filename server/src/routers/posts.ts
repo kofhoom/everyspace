@@ -16,7 +16,7 @@ const uploadPostFile = async (req: Request, res: Response) => {
     // 파일 유형을 지정치 않았을 시에는 업로드 된 파일 삭제
     if (type !== "cover") {
       if (!req.file?.path) {
-        return res.status(400).json({ error: "유효하지 않는 파일" });
+        return res.status(400).json({ coverImage: "사진을 등록해 주세요" });
       }
 
       // 파일을 지워주기
@@ -38,7 +38,7 @@ const uploadPostFile2 = async (req: Request, res: Response) => {
     // 파일 유형을 지정치 않았을 시에는 업로드 된 파일 삭제
     if (type !== "music") {
       if (!req.file?.path) {
-        return res.status(400).json({ error: "유효하지 않는 파일" });
+        return res.status(400).json({ music: "음원을 등록해 주세요" });
       }
 
       // 파일을 지워주기
@@ -65,11 +65,24 @@ const createPost = async (req: Request, res: Response) => {
     imageUrn,
     musicFileUrn,
   } = req.body;
+
   if (title.trim() === "") {
     return res.status(400).json({ title: "제목은 비워둘 수 없습니다." });
   }
+
+  if (priceChoose !== "free" && !price) {
+    return res.status(400).json({ price: "가격을 설정해 주세요" });
+  }
+
+  if (!musicType) {
+    return res.status(400).json({ musicType: "장르를 설정해 주세요" });
+  }
+  if (!body.trim()) {
+    return res.status(400).json({ body: "내용을 입력해 주세요" });
+  }
+
   const user = res.locals.user;
-  console.log(user);
+
   try {
     const subRecord = await Sub.findOneByOrFail({ name: sub });
     const post = new Post();
@@ -141,7 +154,7 @@ const getPost = async (req: Request, res: Response) => {
 
 const getPosts = async (req: Request, res: Response) => {
   const currentPage: number = (req.query.page || 0) as number;
-  const perPage: number = (req.query.count || 3) as number;
+  const perPage: number = (req.query.count || 2) as number;
 
   try {
     const posts = await Post.find({
@@ -156,6 +169,32 @@ const getPosts = async (req: Request, res: Response) => {
     }
 
     return res.json(posts);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "문제가 발생하였습니다." });
+  }
+};
+
+// 인기순
+const getPopularityPosts = async (req: Request, res: Response) => {
+  try {
+    const posts = await Post.find({
+      order: { createdAt: "DESC" },
+      relations: ["sub", "votes", "comments"],
+      take: 3,
+    });
+
+    if (res.locals.user) {
+      posts.forEach((p) => p.setUserVote(res.locals.user));
+    }
+
+    // voteScore 값을 기준으로 내림차순으로 정렬
+    posts.sort((a, b) => b.voteScore - a.voteScore);
+
+    // voteScore가 0이 아닌 게시물만 필터링
+    const popularPosts = posts.filter((post) => post.voteScore !== 0);
+
+    return res.json(popularPosts);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "문제가 발생하였습니다." });
@@ -222,6 +261,7 @@ const router = Router();
 
 router.post("/", userMiddleware, authMiddleware, createPost);
 router.get("/", userMiddleware, getPosts);
+router.get("/popularity", userMiddleware, getPopularityPosts);
 router.post(
   "/upload",
   userMiddleware,

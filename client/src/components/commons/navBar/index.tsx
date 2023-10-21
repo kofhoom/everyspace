@@ -19,18 +19,22 @@ export default function NaveBar() {
       });
   };
   return (
-    <div className="fixed inset-x-0 top-0 z-10 flex items-center justify-between h-13 px-5 bg-white border-b">
-      <span
-        style={{ width: 50 }}
-        className="text-2xl font-semibold text-gray-400 inline-block"
-      >
+    <div className="fixed inset-x-0 top-0 z-10 flex items-center justify-between h-13 p-3 bg-white border-b">
+      <div>
         <Link href="/" legacyBehavior>
-          <a>
-            <Image src="/mlogo.png" alt="logo" width={80} height={80} />
+          <a className="flex items-center">
+            <Image
+              src="/Ologo.png"
+              alt="logo"
+              width={30}
+              height={30}
+              className="mr-1"
+            />
+            <span className="mr-5 font-extrabold inline-block">ORIZIC</span>
           </a>
         </Link>
-      </span>
-      <span className="mr-3 font-extrabold">ORIZIC</span>
+      </div>
+
       {/* 검색 박스 시작 */}
       <div className="max-w-full pr-4">
         <div className="relative flex items-center bg-gray-100 border rounded hover:border-gray-700 hover:bg-white">
@@ -42,7 +46,7 @@ export default function NaveBar() {
           />
         </div>
       </div>
-      <div className="ml-auto pr-10">
+      <div className="ml-auto pr-5">
         <ul className="flex items-center">
           <li className="text-sm font-semibold cursor-pointer mr-3">
             <Link href={`/community`} legacyBehavior>
@@ -50,7 +54,7 @@ export default function NaveBar() {
             </Link>
           </li>
           <li className="text-sm  cursor-pointer mr-2">
-            <button className="w-20 px-2 text-xs h-7 text-center font-normal border-gray-300 hover:border-black hover:font-semibold transition rounded border ">
+            <button className="w-20 px-2 text-xs h-7 text-center text-gray-400 font-normal border-gray-300 hover:border-blue-500 hover:font-semibold hover:text-blue-500 transition rounded-xl border">
               <Link href={`/create`} legacyBehavior>
                 <a className="flex justify-center items-center w-full h-full text-xs text-gray-30">
                   업로드
@@ -79,31 +83,34 @@ export default function NaveBar() {
               <p className="text-xs mr-4">
                 <b>{user?.username}</b>님 환영합니다.
               </p>
-              <button className="w-21 px-2 mr-2 text-sm h-7 text-center text-white bg-black rounded">
+              <div className="flex items-center w-32">
                 <Link href={`/u/${user!.username}`} legacyBehavior>
-                  <a className="text-xs">마이 페이지</a>
+                  <a className="flex justify-center items-center w-full h-full text-xs mr-1 hover:underline cursor-pointer transition">
+                    마이 페이지
+                  </a>
                 </Link>
-              </button>
-              <button
-                className="w-20 px-2 mr-2 text-xs h-7 text-center text-white bg-gray-400 rounded"
-                onClick={handleLogout}
-              >
-                로그아웃
-              </button>
+                <div
+                  className="flex justify-center items-center w-full h-full text-xs hover:underline cursor-pointer transition"
+                  onClick={handleLogout}
+                >
+                  로그아웃
+                </div>
+              </div>
             </>
           ) : (
-            <>
-              <Link href="/login" legacyBehavior>
-                <a className="w-20 px-2 pt-1 mr-2 h-7 text-sm text-center text-orange-500 border border-orange-400 rounded">
+            <div className="flex items-center w-28">
+              <Link href={`/login`} legacyBehavior>
+                <a className="flex justify-center items-center w-full h-full text-xs mr-2 hover:underline cursor-pointer transition">
                   로그인
                 </a>
               </Link>
-              <Link href="/register" legacyBehavior>
-                <a className="w-20 px-2 pt-1 mr-2 h-7 text-sm text-center text-white bg-orange-500 rounded">
+
+              <Link href={`/register`} legacyBehavior>
+                <a className="flex justify-center items-center w-full h-full text-xs hover:underline cursor-pointer transition">
                   회원가입
                 </a>
               </Link>
-            </>
+            </div>
           ))}
       </div>
     </div>

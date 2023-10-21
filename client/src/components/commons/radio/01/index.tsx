@@ -1,10 +1,12 @@
-import { Radio } from "antd";
+import { Radio, RadioChangeEvent } from "antd";
 
 interface IRadioGroupProps {
   className?: string;
   value: string;
   error?: string | undefined;
   setValue: (str: string) => void;
+  name?: string;
+  onChange: (e: RadioChangeEvent) => void;
 }
 
 export default function RadioLayout({

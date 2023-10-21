@@ -154,7 +154,7 @@ export default function UserList() {
           <p className="flex items-center text-2xl font-medium pb-3 mb-4 border-b border-b-gray-300">
             <AiOutlineOrderedList className="mr-2" /> 맴버가입 신청 리스트
           </p>
-          <BasicTable columns={columns} data={data.user?.approvalRequsts} />
+          <BasicTable columns={columns} data={user?.approvalRequsts} />
         </div>
       ),
     },

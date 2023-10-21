@@ -1,76 +1,61 @@
-import BoardCommunityList from "@/src/components/units/communityList/BoardCommunityList.index";
 import PostCardList from "@/src/components/units/post/cardList/PostCardList.index";
-import { Post, User } from "@/types";
-import useSWRInfinite from "swr/infinite";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { Post } from "@/types";
+import useSWR from "swr";
+import useSwR from "swr";
+import { Divider } from "antd";
 
 export default function Home() {
-  const getKey = (pageIndex: number, previousPageData: Post[]) => {
-    if (previousPageData && !previousPageData.length) return null;
-    return `/posts?page=${pageIndex}`;
-  };
+  // 포스트 리스트 가져오기
+  const address = `/posts?count=3`;
+  const { data, error, mutate } = useSWR<Post[]>(address);
   const {
-    data,
-    error,
-    size: page,
-    setSize: setPage,
-    isValidating,
-    mutate,
-  } = useSWRInfinite<Post[]>(getKey);
+    data: popularityPost,
+    error: getUserError,
+    mutate: popularityMutate,
+  } = useSwR<Post[]>("/posts/popularity");
 
-  const isInitialLoading = !data && !error;
-  const posts: Post[] = data ? ([] as Post[]).concat(...data) : [];
+  // 데이터 로딩 상태
+  const isInitialLoading = !data && !popularityPost && !error && !getUserError;
 
-  const [observePost, setObservedPost] = useState("");
-  console.log(posts);
-  useEffect(() => {
-    // 포스트가 없다면 return
-    if (!posts || posts.length === 0) return;
-    // posts 배열안에 마지막 post에 id를 가져옵니다.
-    const id = posts[posts.length - 1].identifier;
-    // posts 배열에 post가 추가돼서 마지막 post가 바뀌었다면
-    // 바뀐 post 중 마지막post를 observePost로
-    if (id !== observePost) {
-      setObservedPost(id);
-      observeElement(document.getElementById(id));
-    }
-  }, [posts]);
-
-  const observeElement = (el: HTMLElement | null) => {
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      // entries는 IntersectionObserverEntry 인스턴스의 배열
-      (entries) => {
-        // isIntersecting: 관찰 대상의 교차 상태(Boolean)
-        if (entries[0].isIntersecting == true) {
-          // console.log("마지막 포스트에 왔습니다.");
-          setPage(page + 1);
-          observer.unobserve(el);
-        }
-      },
-      { threshold: 1 }
-    );
-    // 대상 요소의 관찰을 시작
-    observer.observe(el);
-  };
-
-  const { pathname } = useRouter();
-  const authRoutes = ["/community"];
-  const authRoute = authRoutes.includes(pathname);
   return (
-    <main className="flex max-w-6xl px-4 mx-auto pt-5">
+    <main className="max-w-6xl px-4 mx-auto pt-5">
       {/* 포스트 리스트 */}
-      <div className="w-full layout">
-        {isInitialLoading && (
-          <p className="text-lg text-center">로딩중입니다.</p>
-        )}
-        {posts?.map((post) => (
-          <PostCardList key={post.identifier} post={post} mutate={mutate} />
-        ))}
-      </div>
-      {/* 커뮤니티 리스트 */}
-      {authRoute && <BoardCommunityList />}
+      <section className="w-full">
+        <h2 className="main-section-title">
+          NEW 최신 음악.{" "}
+          <span className="text-gray-500 text-xl">따끈따끈한 신곡</span>
+        </h2>
+        <Divider className="mb-5 mt-2" />
+        <div className="w-full layout">
+          {isInitialLoading && (
+            <p className="text-lg text-center">로딩중입니다.</p>
+          )}
+          {data?.map((post) => (
+            <PostCardList key={post.identifier} post={post} mutate={mutate} />
+          ))}
+        </div>
+      </section>
+      <section className="w-full mt-10">
+        <h2 className="main-section-title">
+          인기 음악.{" "}
+          <span className="text-gray-500 text-xl">
+            지금! 가장 인기있는 음악
+          </span>
+        </h2>
+        <Divider className="mb-5 mt-2" />
+        <div className="w-full layout">
+          {isInitialLoading && (
+            <p className="text-lg text-center">로딩중입니다.</p>
+          )}
+          {popularityPost?.map((post) => (
+            <PostCardList
+              key={post.identifier}
+              post={post}
+              mutate={popularityMutate}
+            />
+          ))}
+        </div>
+      </section>
     </main>
   );
 }

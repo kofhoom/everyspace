@@ -317,16 +317,9 @@ export default function PostContentPage() {
                   </div>
                 ) : (
                   <div className="flex items-center justify-between px-2 py-4 border border-gray-200 rounded">
-                    <p className=" text-gray-400">
+                    <p className="text-gray-400 text-sm">
                       댓글 작성을 위해서 로그인 해주세요
                     </p>
-                    <div>
-                      <Link href={`/login`} legacyBehavior>
-                        <a className="px-3 py-1 text-white bg-gray-400 rounded">
-                          로그인
-                        </a>
-                      </Link>
-                    </div>
                   </div>
                 )}
               </div>
@@ -391,6 +384,11 @@ export default function PostContentPage() {
               ))}
             </>
           )}
+        </div>
+        <div className="w-full flex justify-end mt-3">
+          <button onClick={() => router.replace(`/r/${sub}`)}>
+            <a className="px-3 py-1 text-white bg-black rounded">목록</a>
+          </button>
         </div>
       </div>
     </div>

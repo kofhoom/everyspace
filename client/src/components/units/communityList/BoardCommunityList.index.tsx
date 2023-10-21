@@ -55,7 +55,7 @@ export default function BoardCommunityList() {
         </div>
         {authenticated && (
           <div
-            className="max-w-fit m-auto my-5 px-2.5 py-1 text-sm cursor-pointer font-normal border-gray-300 hover:border-black hover:font-semibold transition rounded border"
+            className="max-w-fit m-auto my-5 px-2.5 py-1 text-sm cursor-pointer border-gray-300 hover:border-blue-500 hover:font-semibold hover:text-blue-500 transition rounded-xl border text-gray-400 "
             onClick={createMovePageHandleler}
           >
             아지트 생성

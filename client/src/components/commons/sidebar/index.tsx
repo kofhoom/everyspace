@@ -62,7 +62,7 @@ export default function SideBar({ sub }: { sub: Sub }) {
           </p>
           <p className="flex items-center mb-1">
             <span className="flex items-center text-sm font-medium">
-              맴버수 : {sub?.subMemberCount || 0}
+              맴버수 : {sub?.subMemberCount}
               {sub?.subMemberCount && (
                 <Tooltip
                   placement="bottom"
@@ -91,7 +91,8 @@ export default function SideBar({ sub }: { sub: Sub }) {
               ) : (
                 ""
               )}
-              {sub.subMember?.some((el: any) => el === user?.username) && (
+              {user?.username === sub.username ||
+              sub.subMember?.some((el: any) => el === user?.username) ? (
                 <p className="w-full mx-0 my-2 text-center rounded border border-gray-300 hover:border-black hover:font-semibold transition">
                   <Link href={`/r/${sub.name}/create`} legacyBehavior>
                     <a className="w-full inline-block p-2 text-xs text-black bg-white rounded">
@@ -99,6 +100,8 @@ export default function SideBar({ sub }: { sub: Sub }) {
                     </a>
                   </Link>
                 </p>
+              ) : (
+                ""
               )}
             </>
           )}

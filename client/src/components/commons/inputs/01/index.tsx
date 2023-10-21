@@ -1,4 +1,5 @@
 import cls from "classnames";
+import { ChangeEvent } from "react";
 
 interface IInputGroupProps {
   className?: string;
@@ -6,25 +7,28 @@ interface IInputGroupProps {
   placeholder?: string;
   value: string;
   error?: string | undefined;
-  disabeld?: boolean;
+  disabled?: boolean;
   maxLength?: number;
+  name?: string;
   setValue: (str: string) => void;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function InputGroup({
   className = "w-full mb-4",
   type = "text",
   placeholder = "",
-  disabeld = false,
+  disabled = false,
   error,
   value,
   maxLength,
   setValue,
+  name,
 }: IInputGroupProps) {
   return (
     <div className={className}>
       <input
-        disabled={disabeld}
+        disabled={disabled}
         type={type}
         className={cls(
           `w-full p-3 transition duration-200 border border-gray-200 rounded  focus:bg-white hover:bg-white`,
@@ -32,11 +36,14 @@ export default function InputGroup({
             "border-red-5002": error,
           },
           {
-            "bg-gray-50": disabeld,
+            "bg-gray-50": disabled,
           }
         )}
         placeholder={placeholder}
-        onChange={(e) => setValue(e.target.value)}
+        name={name}
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+          setValue(e.target.value)
+        }
         value={value}
         maxLength={maxLength}
       />

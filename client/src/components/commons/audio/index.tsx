@@ -16,6 +16,7 @@ const AudioLayout = ({ audioUrl }: AudioProps) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const { authenticated } = useAuthState();
+
   useEffect(() => {
     const audio = audioRef.current;
     if (audio) {
@@ -26,9 +27,11 @@ const AudioLayout = ({ audioUrl }: AudioProps) => {
         }
         setCurrentTime(currentTime);
         setDuration(duration);
-        if (currentTime === duration) {
+        if (currentTime === duration && targetRef.current) {
           // 현재 시간이 총 시간과 같다면 재생을 멈춤.
           setPlay(false);
+          targetRef.current.style.width = `0%`;
+          setCurrentTime(0);
         }
       });
     }
