@@ -16,6 +16,7 @@ import { User } from "./User";
 import Vote from "./Vote";
 import { slugify } from "transliteration"; // 한글명 처리
 import { Length } from "class-validator";
+import Payment from "./Payment";
 
 @Entity("posts")
 export default class Post extends BaseEntity {
@@ -50,19 +51,22 @@ export default class Post extends BaseEntity {
   username: string;
 
   @Column({ nullable: true })
+  buyername: string;
+
+  @Column({ nullable: true })
   imageUrn: string;
 
   @Column({ nullable: true })
   musicFileUrn: string;
 
-  @Column({ nullable: true })
-  userImage: string;
-
   @ManyToOne(() => User, (user) => user.posts)
   @JoinColumn({ name: "username", referencedColumnName: "username" })
   user: User;
 
-  @ManyToOne(() => Sub, (sub) => sub.posts)
+  @ManyToOne(() => Sub, (sub) => sub.posts, {
+    nullable: false,
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "subName", referencedColumnName: "name" })
   sub: Sub;
 

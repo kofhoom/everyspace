@@ -10,17 +10,20 @@ interface FormData {
   username: string;
   password: string;
 }
+
 export default function LoginListPage() {
   const [formData, setFormData] = useState<FormData>({
     username: "",
     password: "",
   });
+
   const [errors, setErrors] = useState<any>({});
   const { authenticated } = useAuthState();
   const dispatch = useAuthDispatch();
   const router = useRouter();
 
-  if (authenticated) {
+  const isAdmin = router.pathname.includes("/admin");
+  if (!isAdmin && authenticated) {
     router.push("/");
   }
 
@@ -44,6 +47,10 @@ export default function LoginListPage() {
       dispatch("LOGIN", res.data?.user);
 
       // 홈페이지로 리다이렉트
+      if (isAdmin) {
+        router.push("/admin");
+        return;
+      }
       router.push("/");
     } catch (error: any) {
       console.log("error", error);
@@ -57,7 +64,7 @@ export default function LoginListPage() {
     <div className="w-full">
       <div className="flex flex-col items-center justify-center h-screen p-6">
         <div className="mx-auto md:w-96">
-          <h1 className="text-2xl font-bold">로그인</h1>
+          <h1 className="text-2xl font-bold">{isAdmin ? "admin" : "로그인"}</h1>
           <Divider className="mb-5 mt-3" />
           <form
             onSubmit={handleSubmit}
@@ -98,13 +105,15 @@ export default function LoginListPage() {
               로그인
             </button>
           </form>
-          <small>
-            아직 아이디가 없나요?
-            <Link href="/register" legacyBehavior>
-              {/* 회원가입 링크 */}
-              <a className="m-1 text-blue-500 uppercase">회원가입</a>
-            </Link>
-          </small>
+          {!isAdmin && (
+            <small>
+              아직 아이디가 없나요?
+              <Link href="/register" legacyBehavior>
+                {/* 회원가입 링크 */}
+                <a className="m-1 text-blue-500 uppercase">회원가입</a>
+              </Link>
+            </small>
+          )}{" "}
         </div>
       </div>
     </div>

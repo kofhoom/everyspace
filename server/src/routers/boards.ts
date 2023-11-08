@@ -12,7 +12,7 @@ import path from "path";
 import { unlinkSync } from "fs";
 
 /* 라우터 설정 */
-const createBoard = async (req: Request, res: Response, next) => {
+const createBoard = async (req: Request, res: Response) => {
   const { name, title, description } = req.body;
   try {
     // 유져 정보가 있다면 sub 이름과 제목이 이미 있는 것인지 체크
@@ -50,6 +50,30 @@ const createBoard = async (req: Request, res: Response, next) => {
     return res.json(sub);
   } catch (error) {
     return res.status(500).json({ error: "문제가 발생했습니다." });
+  }
+};
+
+// 아지트 삭제
+const deleteSub = async (req: Request, res: Response) => {
+  const name = req.params.name;
+
+  try {
+    const sub = await Sub.findOneByOrFail({ name });
+
+    if (!sub) {
+      return res.status(404).json({ error: "아지트를 찾을 수 없습니다." });
+    }
+
+    await AppDataSource.createQueryBuilder()
+      .delete()
+      .from(Sub)
+      .where("name = :name", { name: sub.name })
+      .execute();
+
+    return res.json({ message: "아지트가 성공적으로 삭제되었습니다." });
+  } catch (error: any) {
+    console.log(error);
+    return res.status(404).json({ error: "서브를 찾을수 없음니다" });
   }
 };
 
@@ -97,10 +121,22 @@ const getSub = async (req: Request, res: Response) => {
   }
 };
 
+const getAllSubs = async (req: Request, res: Response) => {
+  try {
+    const sub = await Sub.find();
+
+    // 포스트를 생성한 후에 해당 sub에 속하는 포스트 정보들을 넣어주기
+    console.log(sub);
+    return res.json(sub);
+  } catch (error: any) {
+    return res.status(404).json({ error: "서브를 찾을수 없음니다" });
+  }
+};
+
 // 커뮤니티 소유 여부
 const ownSub = async (req: Request, res: Response, next: NextFunction) => {
   const user: User = res.locals.user;
-
+  console.log();
   try {
     const sub = await Sub.findOneOrFail({ where: { name: req.params.name } });
     if (sub.username !== user.username) {
@@ -181,7 +217,9 @@ const uploadSubImage = async (req: Request, res: Response) => {
 
 const router = Router();
 
+router.get("/", getAllSubs);
 router.get("/:name", userMiddleware, getSub);
+router.post("/:name/delete", userMiddleware, deleteSub);
 router.post("/new", userMiddleware, authMiddleware, createBoard);
 router.get("/sub/topSubs", topSubs);
 router.post(

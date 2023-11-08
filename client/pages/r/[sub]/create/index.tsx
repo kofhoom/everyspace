@@ -3,7 +3,7 @@ import axios from "axios";
 import { GetServerSideProps } from "next";
 
 export default function PostCreatePage() {
-  return <PostCreateList />;
+  return <PostCreateList isEdit={false} />;
 }
 
 // 인증에 따른 제한

@@ -13,9 +13,16 @@ import Vote from "../entities/Vote";
 const uploadPostFile = async (req: Request, res: Response) => {
   try {
     const type = req.body.type;
+
+    if (req.query) {
+      let newFileName = req.file?.filename ?? req.query.imageUrn;
+      return res.json(newFileName);
+    }
+
     // 파일 유형을 지정치 않았을 시에는 업로드 된 파일 삭제
     if (type !== "cover") {
       if (!req.file?.path) {
+        console.log(req.file?.path, "asdsad");
         return res.status(400).json({ coverImage: "사진을 등록해 주세요" });
       }
 
@@ -35,6 +42,13 @@ const uploadPostFile = async (req: Request, res: Response) => {
 const uploadPostFile2 = async (req: Request, res: Response) => {
   try {
     const type = req.body.type;
+
+    if (req.query) {
+      let newFileName = req.file?.filename ?? req.query.musicFileUrn;
+
+      return res.json(newFileName);
+    }
+
     // 파일 유형을 지정치 않았을 시에는 업로드 된 파일 삭제
     if (type !== "music") {
       if (!req.file?.path) {
@@ -84,7 +98,6 @@ const createPost = async (req: Request, res: Response) => {
   const user = res.locals.user;
 
   try {
-    const subRecord = await Sub.findOneByOrFail({ name: sub });
     const post = new Post();
     post.title = title;
     post.body = body;
@@ -92,11 +105,57 @@ const createPost = async (req: Request, res: Response) => {
     post.priceChoose = priceChoose;
     post.price = price;
     post.musicType = musicType;
-    post.sub = subRecord;
+    post.imageUrn = imageUrn;
+    post.musicFileUrn = musicFileUrn;
+    if (sub === "nomal") {
+      post.sub = sub;
+    } else {
+      const subRecord = await Sub.findOneByOrFail({ name: sub });
+
+      post.sub = subRecord;
+    }
+
+    await post.save();
+    return res.json(post);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "문제가 발생했습니다." });
+  }
+};
+
+// 포스트 업데이트
+const updatePost = async (req: Request, res: Response) => {
+  const { identifier, slug } = req.params;
+  const {
+    title,
+    body,
+    sub,
+    priceChoose,
+    price,
+    musicType,
+    imageUrn,
+    musicFileUrn,
+  } = req.body;
+
+  try {
+    // 해당 identifier 및 slug로 포스트를 찾습니다.
+    const post = await Post.findOneByOrFail({ identifier, slug });
+
+    // 업데이트할 내용을 설정합니다.
+    post.title = title;
+    post.body = body;
+    post.priceChoose = priceChoose;
+    post.price = price;
+    post.musicType = musicType;
     post.imageUrn = imageUrn;
     post.musicFileUrn = musicFileUrn;
 
+    const subRecord = await Sub.findOneBy({ name: sub });
+    post.sub = subRecord;
+
+    // 업데이트된 포스트를 저장합니다.
     await post.save();
+
     return res.json(post);
   } catch (error) {
     console.log(error);
@@ -134,6 +193,19 @@ const deletePost = async (req: Request, res: Response) => {
   }
 };
 
+// 포스트 모든 정보 불러오기
+const getAllPost = async (req: Request, res: Response) => {
+  try {
+    const post = await Post.find({
+      order: { createdAt: "DESC" },
+    });
+
+    return res.send(post);
+  } catch (error) {
+    return res.status(404).json({ error: "게시물을 찾을 수 없습니다." });
+  }
+};
+
 // 포스트 정보 불러오기
 const getPost = async (req: Request, res: Response) => {
   const { identifier, slug } = req.params;
@@ -141,7 +213,7 @@ const getPost = async (req: Request, res: Response) => {
   try {
     const post = await Post.findOneOrFail({
       where: { identifier, slug },
-      relations: ["sub", "votes"],
+      relations: ["sub", "votes", "user"],
     });
     if (res.locals.user) {
       post.setUserVote(res.locals.user);
@@ -260,6 +332,7 @@ const deleteComments = async (req: Request, res: Response) => {
 const router = Router();
 
 router.post("/", userMiddleware, authMiddleware, createPost);
+router.get("/getAllPost", getAllPost);
 router.get("/", userMiddleware, getPosts);
 router.get("/popularity", userMiddleware, getPopularityPosts);
 router.post(
@@ -284,6 +357,7 @@ router.post(
   deletePost
 );
 router.get("/:identifier/:slug", userMiddleware, getPost);
+router.put("/:identifier/:slug/update", userMiddleware, updatePost);
 
 router.post("/:identifier/:slug/comments", userMiddleware, creatPostComment);
 router.post(

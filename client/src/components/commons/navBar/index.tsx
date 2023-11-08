@@ -2,11 +2,11 @@ import { useAuthDispatch, useAuthState } from "@/src/context/auth";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
-import { FaSearch } from "react-icons/fa";
 
 export default function NaveBar() {
   const { loading, authenticated, user } = useAuthState();
   const dispatch = useAuthDispatch();
+
   const handleLogout = () => {
     axios
       .post("/auth/logout")
@@ -18,13 +18,14 @@ export default function NaveBar() {
         console.log(error);
       });
   };
+
   return (
-    <div className="fixed inset-x-0 top-0 z-10 flex items-center justify-between h-13 p-3 bg-white border-b">
+    <div className="fixed inset-x-0 top-0 z-10 flex items-center justify-between h-13 p-3 bg-white border-b max-w-6xl m-auto">
       <div>
         <Link href="/" legacyBehavior>
           <a className="flex items-center">
             <Image
-              src="/Ologo.png"
+              src="/mainLogo.png"
               alt="logo"
               width={30}
               height={30}
@@ -34,35 +35,30 @@ export default function NaveBar() {
           </a>
         </Link>
       </div>
-
-      {/* 검색 박스 시작 */}
-      <div className="max-w-full pr-4">
-        <div className="relative flex items-center bg-gray-100 border rounded hover:border-gray-700 hover:bg-white">
-          <FaSearch className="ml-2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search.."
-            className="px-3 py-1 bg-transparent h-7 rounded focus:outline-none"
-          />
-        </div>
-      </div>
-      <div className="ml-auto pr-5">
+      <div className="mr-auto">
         <ul className="flex items-center">
-          <li className="text-sm font-semibold cursor-pointer mr-3">
+          <li className="text-sm transition hover:font-semibold cursor-pointer mr-3">
+            <Link href={`/mystore/${user?.username}`} legacyBehavior>
+              <a className="text-xs">나의 상점</a>
+            </Link>
+          </li>
+          <li className="text-sm transition hover:font-semibold cursor-pointer">
             <Link href={`/community`} legacyBehavior>
               <a className="text-xs">아지트</a>
             </Link>
           </li>
-          <li className="text-sm  cursor-pointer mr-2">
-            <button className="w-20 px-2 text-xs h-7 text-center text-gray-400 font-normal border-gray-300 hover:border-blue-500 hover:font-semibold hover:text-blue-500 transition rounded-xl border">
-              <Link href={`/create`} legacyBehavior>
-                <a className="flex justify-center items-center w-full h-full text-xs text-gray-30">
-                  업로드
-                </a>
-              </Link>
-            </button>
-          </li>
         </ul>
+      </div>
+      <div className="ml-auto pr-5">
+        <div className="text-sm  cursor-pointer mr-2">
+          <button className="w-20 px-2 text-xs h-7 text-center text-gray-400 font-normal border-gray-300 hover:border-blue-500 hover:font-semibold hover:text-blue-500 transition rounded-xl border">
+            <Link href={`/create`} legacyBehavior>
+              <a className="flex justify-center items-center w-full h-full text-xs text-gray-30">
+                업로드
+              </a>
+            </Link>
+          </button>
+        </div>
       </div>
       <div className="flex items-center">
         {!loading &&
@@ -74,7 +70,7 @@ export default function NaveBar() {
                     key={user!.username}
                     src={user!.userImageUrl}
                     alt="sub"
-                    className="rounded-full cursor-pointer border-gray-200"
+                    className="rounded-full cursor-pointer border-gray-200 object-contain"
                     width={34}
                     height={34}
                   />

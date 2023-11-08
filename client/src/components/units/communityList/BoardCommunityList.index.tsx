@@ -16,13 +16,14 @@ export default function BoardCommunityList() {
     const checkCommunityMake = topSubs?.some(
       (el) => el.username === user?.username
     );
-    if (checkCommunityMake) window.alert("아지트 생성은 1개만 가능합니다.");
+    if (checkCommunityMake)
+      return window.alert("아지트 생성은 1개만 가능합니다.");
     else router.push("/boards/new");
   };
 
   return (
     <div className="hidden w-4/12 ml-3 md:block">
-      <div className="bg-white border rounded">
+      <div className="bg-white border rounded-lg shadow-md">
         <div className="p-4 border-b">
           <p className="text-lg font-semibold text-center">아지트</p>
         </div>

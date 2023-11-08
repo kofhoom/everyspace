@@ -7,12 +7,14 @@ import NaveBar from "@/src/components/commons/navBar";
 import { SWRConfig } from "swr";
 import axios from "axios";
 import Head from "next/head";
+import { RecoilRoot } from "recoil";
+import FooterLayout from "@/src/components/commons/footer";
 
 export default function App({ Component, pageProps }: AppProps) {
   Axios.defaults.baseURL = process.env.NEXT_PUBLIC_SERVER_BASE_URL + "/api";
   Axios.defaults.withCredentials = true; // 쿠키에 유져 토큰 저장 허용
   const { pathname } = useRouter();
-  const authRoutes = ["/register", "/login"];
+  const authRoutes = ["/admin", "/admin/login"];
   const authRoute = authRoutes.includes(pathname);
   const fetcher = async (url: string) => {
     try {
@@ -38,12 +40,15 @@ export default function App({ Component, pageProps }: AppProps) {
           fetcher,
         }}
       >
-        <AuthProvider>
-          <NaveBar />
-          <div className={!authRoute ? "pt-12 bg-gray-200 min-h-screen" : " "}>
-            <Component {...pageProps} />
-          </div>
-        </AuthProvider>
+        <RecoilRoot>
+          <AuthProvider>
+            {authRoute ? "" : <NaveBar />}
+            <div className={!authRoute ? "pt-12 min-h-screen" : " "}>
+              <Component {...pageProps} />
+              <FooterLayout />
+            </div>
+          </AuthProvider>
+        </RecoilRoot>
       </SWRConfig>
     </>
   );

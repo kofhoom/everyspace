@@ -102,6 +102,20 @@
   gap: 10px;
 }
 
+.section-layout {
+  background: white;
+  padding: 2rem 2rem;
+  @apply rounded-xl;
+}
+
+.ant-result-success {
+  @apply section-layout border shadow-md max-w-2xl w-full  m-auto;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: black !important;
+  font-weight: 500;
+}
 .font-13 {
   font-size: 13px;
 }
@@ -125,4 +139,39 @@ img {
   font-size: 28px;
   font-weight: 600;
   letter-spacing: -0.045em;
+}
+
+.mystore-banner-wrap:hover .mystore-banner-btn {
+  opacity: 1;
+}
+
+.mystore-banner-btn {
+  opacity: 0;
+  transition: all, 0.3;
+}
+.mystore-profile:hover .mystore-banner-btn {
+  opacity: 1;
+}
+
+.ant-tabs-nav {
+  /* width: fit-content;   */
+}
+.ant-tabs-tab-active .ant-tabs-tab-btn {
+  font-weight: 600;
+}
+.store-img-wrap {
+  height: 100%;
+}
+
+.store-img-wrap .mystore-img {
+  padding-top: 99.285%;
+}
+
+.store-img-w {
+  width: 100%;
+  max-width: 204.6px;
+}
+
+.store-content-w {
+  width: calc(100% - 234px);
 }

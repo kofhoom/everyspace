@@ -67,6 +67,7 @@ const register = async (req: Request, res: Response) => {
     user.username = username;
     user.password = password;
     user.userImageUrn = imageUrn;
+    user.userBannerUrn = "";
     user.isApproved = false;
     user.approvalRequsts = [];
     // 엔티티에 정해 놓은 조건으로 user 데이터의 유효성 검사를 해줌.
@@ -160,6 +161,7 @@ const requestApproval = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
     if (res.locals.user) {
       const approvalSameCheck = user.approvalRequsts.some(
         (el) => el === requesterUserIds
@@ -170,7 +172,6 @@ const requestApproval = async (req: Request, res: Response) => {
     user.approvalRequsts.push(requesterUserIds);
 
     await user.save();
-    // console.log(user, "asdasd");
     return res.json({ message: "Approval request sent", user });
   } catch (error) {
     console.log(error);
@@ -187,7 +188,7 @@ const approval = async (req: Request, res: Response) => {
 
   try {
     const user: User = res.locals.user;
-    // const user = await User.findOneByOrFail({ username });
+
     const sub = await Sub.findOneByOrFail({ username: user.username });
 
     if (!user) {
@@ -205,7 +206,6 @@ const approval = async (req: Request, res: Response) => {
     }
 
     sub.subMember.push(username);
-    console.log(sub);
 
     await sub.save();
     await user.save();
@@ -217,6 +217,36 @@ const approval = async (req: Request, res: Response) => {
   }
 };
 
+// 승인거절 요청 처리 엔드포인트
+const reject = async (req: Request, res: Response) => {
+  const currentUsername = req.params.id;
+
+  try {
+    const user: User = res.locals.user;
+    const currentUser = await User.findOneByOrFail({
+      username: currentUsername,
+    });
+    if (!user) {
+      return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
+    }
+    if (user) {
+      // 거절 당한 사용자로 표시
+      currentUser.isRejected = true;
+
+      // 거절 처리: 승인 요청 목록에서 요청을 삭제
+      user.approvalRequsts = user.approvalRequsts.filter(
+        (requesterId) => requesterId !== currentUsername
+      );
+    }
+
+    await user.save();
+
+    return res.json({ message: "User request rejected" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error rejecting user request" });
+  }
+};
+
 const router = Router();
 router.get("/me", userMiddleware, authMiddleware, me);
 router.post("/upload", uploadImage.single("file"), uploadPostImage);
@@ -224,6 +254,8 @@ router.post("/register", register);
 router.post("/register/upload", register);
 router.post("/login", login);
 router.post("/logout", userMiddleware, authMiddleware, logout);
+
 router.put("/:userId/request-approval", userMiddleware, requestApproval);
 router.put("/:userId/approve", userMiddleware, approval);
+router.put("/:userId/reject", userMiddleware, reject);
 export default router;

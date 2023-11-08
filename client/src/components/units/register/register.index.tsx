@@ -14,17 +14,19 @@ interface FormData {
 }
 
 export default function RegisterList() {
-  const router = useRouter();
-
   const [formData, setFormData] = useState<FormData>({
     username: "",
     email: "",
     password: "",
   });
+
   const [imageUrl, setImgUrl] = useState("");
+  const [passwordChack, setPasswordChack] = useState("");
   const [errors, setErrors] = useState<any>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { authenticated } = useAuthState();
+
+  const router = useRouter();
 
   if (authenticated) router.push("/"); //이미 로그인된 유져는 리다이렉트 시킴
   // 이미지 파일 프리뷰 처리
@@ -44,11 +46,15 @@ export default function RegisterList() {
     }
   };
 
+  // 비밀번호 확인
+  const isPassWordChack = formData.password === passwordChack;
+
   // username와 password 둘 다 값이 있는 경우에만 버튼 활성화
   const isButtonDisabled = !(
     formData.username &&
     formData.email &&
-    formData.password
+    formData.password &&
+    isPassWordChack
   );
 
   const uploadImage = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -103,7 +109,7 @@ export default function RegisterList() {
 
         console.log(result);
 
-        router.push("/login");
+        router.push("/register/registerSuccess");
       } catch (error: any) {
         console.log("error", error);
         setErrors(error?.response?.data);
@@ -118,7 +124,7 @@ export default function RegisterList() {
         ref={fileInputRef}
         onChange={uploadImage}
       />
-      <div className="flex items-center h-screen p-6">
+      <div className="flex items-center p-6">
         <div className="w-10/12 mx-auto md:w-96 border border-gray-200 p-4 rounded-lg shadow-md">
           <h1 className="text-2xl font-bold">회원가입</h1>
           <Divider className="mb-5 mt-3" />
@@ -192,6 +198,24 @@ export default function RegisterList() {
               />
             </div>
             <Divider className="mb-5 mt-3" />
+            <div className="flex items-start flex-col">
+              <p className="text-sm mb-2 font-semibold">비밀번호 확인: </p>
+              <InputGroup
+                placeholder="비밀번호 확인"
+                name="passwordCheck"
+                value={passwordChack}
+                type="password"
+                onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
+                setValue={(str: string) => setPasswordChack(str)}
+                error={
+                  passwordChack.length > 5 && isPassWordChack
+                    ? "비밀번호가 일치 합니다."
+                    : passwordChack.length > 5 && !isPassWordChack
+                    ? "비밀번호가 일치하지 않습니다."
+                    : ""
+                }
+              />
+            </div>
             <button
               className={`w-full py-2 mb-1 text-xm font-bold text-white uppercase ${
                 isButtonDisabled

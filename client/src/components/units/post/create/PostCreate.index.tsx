@@ -12,6 +12,7 @@ import SelectGroup from "@/src/components/commons/select/01";
 import { Post } from "@/types";
 import RadioLayout from "@/src/components/commons/radio/01";
 import { Divider } from "antd";
+import useSwR from "swr";
 
 const ageData = [
   { values: "선택" },
@@ -117,14 +118,43 @@ interface FormData {
   sub: string | string[] | undefined;
 }
 
-export default function PostCreateList() {
+interface IPostState {
+  isEdit?: boolean;
+}
+export default function PostCreateList({ isEdit }: IPostState) {
   const router = useRouter();
+  const { identifier, slug } = router.query;
+  // 포스트 리스트 가져오기
+  const {
+    data: post,
+    error,
+    mutate,
+  } = useSwR<Post>(identifier && slug ? `/posts/${identifier}/${slug}` : null);
+
+  console.log(post);
+  useEffect(() => {
+    // 데이터가 로드된 후 실행되는 코드
+    if (post) {
+      // 이미지 파일 설정
+      if (post?.imageUrl) {
+        const imageUrl = post.imageUrl;
+        setImgUrl(imageUrl);
+      }
+
+      // 음원 파일 설정
+      if (post?.musicFileUrn) {
+        const musicUrl = post.musicFileUrn;
+        setMusicName(musicUrl);
+      }
+    }
+  }, [post]);
+
   const [formData, setFormData] = useState<FormData>({
-    title: "",
-    priceChoose: "free",
-    price: "",
-    musicType: "",
-    body: "",
+    title: post?.title || "",
+    priceChoose: post?.priceChoose || "free",
+    price: post?.price || 0,
+    musicType: post?.musicType || "",
+    body: post?.body || "",
     sub: router.query.sub || "nomal",
   });
   const [imgUrl, setImgUrl] = useState<string>("");
@@ -132,6 +162,16 @@ export default function PostCreateList() {
   const [errors, setErrors] = useState<any>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
+
+  // username와 password 둘 다 값이 있는 경우에만 버튼 활성화
+  const isButtonDisabled = !(
+    formData.title &&
+    formData.priceChoose &&
+    formData.musicType &&
+    formData.body &&
+    imgUrl &&
+    musicName
+  );
 
   // 폼 입력값 변경 핸들러
   const handleChange = (e: any) => {
@@ -197,7 +237,7 @@ export default function PostCreateList() {
       try {
         // 커버 이미지 업로드
         const { data: imageUrn, error: imaError }: any = await axios.post(
-          `/posts/upload`,
+          `/posts/upload?imageUrn=${post?.imageUrn}`,
           formData1,
           {
             headers: { "Content-Type": "multipart/form-data" },
@@ -206,22 +246,35 @@ export default function PostCreateList() {
 
         // 음악 파일 업로드
         const { data: musicFileUrn, error: musicError }: any = await axios.post(
-          `/posts/music/upload`,
+          `/posts/music/upload?musicFileUrn=${post?.musicFileUrn}`,
           formData2,
           {
             headers: { "Content-Type": "multipart/form-data" },
           }
         );
-
-        // 포스트 데이터 생성 및 전송
-        const { data: post } = await axios.post<Post>("/posts", {
-          ...formData,
-          imageUrn,
-          musicFileUrn,
-        });
-
-        // 라우터로 이동
-        router.push(`/r/${formData.sub}/${post.identifier}/${post.slug}`);
+        if (isEdit) {
+          // 포스트 데이터 수정 및 전송
+          const { data: updatedPost } = await axios.put<Post>(
+            `/posts/${identifier}/${slug}/update`,
+            {
+              ...formData,
+              imageUrn,
+              musicFileUrn,
+            }
+          );
+          router.push(
+            `/r/${formData.sub}/${updatedPost.identifier}/${updatedPost.slug}`
+          );
+        } else {
+          // 포스트 데이터 생성 및 전송
+          const { data: post } = await axios.post<Post>("/posts", {
+            ...formData,
+            imageUrn,
+            musicFileUrn,
+          });
+          // 라우터로 이동
+          router.push(`/r/${formData.sub}/${post.identifier}/${post.slug}`);
+        }
       } catch (error: any) {
         setErrors(error?.response?.data || {});
       }
@@ -288,7 +341,7 @@ export default function PostCreateList() {
                   음원 등록
                 </button>
                 {musicName && (
-                  <span className="text-sm mb-2 font-semibold">
+                  <span className="text-xs mb-2 text-gray-400 mt-1">
                     {musicName}
                   </span>
                 )}
@@ -340,7 +393,7 @@ export default function PostCreateList() {
                     setValue={(str: string) =>
                       setFormData((prevData) => ({ ...prevData, price: str }))
                     }
-                    maxLength={10}
+                    maxLength={100}
                     disabled={formData.priceChoose == "free"}
                     error={errors.price}
                   />
@@ -384,15 +437,34 @@ export default function PostCreateList() {
                   style={{ top: 43, right: 10 }}
                   className="absolute mb-2 text-sm text-gray-400 select-none"
                 >
-                  {formData.body.trim().length}/20
+                  {formData.body.trim().length}/100
                 </div>
               </div>
               <Divider className="mb-5 mt-3" />
-              {/* 포스트 등록 버튼 */}
+              {/* 포스트 등록 수정 버튼 */}
+
               <div className="flex justify-end mt-2">
-                <button className="w-full py-2 mb-1 text-xm font-bold text-white uppercase bg-gray-400 border border-gray-400 rounded-lg">
-                  등록 하기
-                </button>
+                {isEdit === true ? (
+                  <button
+                    className={`w-full py-2 mb-1 text-xm font-bold text-white uppercase ${
+                      isButtonDisabled
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-blue-500"
+                    } rounded-xl transition`}
+                  >
+                    수정하기
+                  </button>
+                ) : (
+                  <button
+                    className={`w-full py-2 mb-1 text-xm font-bold text-white uppercase ${
+                      isButtonDisabled
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-blue-500"
+                    } rounded-xl transition`}
+                  >
+                    등록하기
+                  </button>
+                )}
               </div>
             </div>
           </form>

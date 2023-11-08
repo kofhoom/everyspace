@@ -1,15 +1,24 @@
 import { useAuthState } from "@/src/context/auth";
 import { TbCrown } from "react-icons/tb";
-import { Sub, User } from "@/types";
+import { Sub } from "@/types";
 import dayjs from "dayjs";
 import Link from "next/link";
 import axios from "axios";
-import { useState } from "react";
-import { Tooltip, Button } from "antd";
+import { Dispatch, SetStateAction, useState } from "react";
+import { Tooltip, Divider } from "antd";
 import { CgUserList } from "react-icons/cg";
+// BiImage
 
-export default function SideBar({ sub }: { sub: Sub }) {
-  const { authenticated, user } = useAuthState();
+export default function SideBar({
+  sub,
+  ownSub,
+  setEdit,
+}: {
+  sub: Sub;
+  ownSub: boolean;
+  setEdit: Dispatch<SetStateAction<boolean>>;
+}) {
+  const { user } = useAuthState();
   const [error, setError] = useState<any>({});
 
   const text = sub.subMember?.map((el: any, index) => (
@@ -26,6 +35,7 @@ export default function SideBar({ sub }: { sub: Sub }) {
     },
   };
   const handleRequestApproval = async (userId: string) => {
+    if (ownSub) return;
     // 승인 요청 보내기 API 호출
     try {
       const result = await axios.put(`/auth/${userId}/request-approval`, {
@@ -40,10 +50,10 @@ export default function SideBar({ sub }: { sub: Sub }) {
   };
   return (
     <div className="hidden w-4/12 ml-3 md:block">
-      <div className="bg-white border rounded">
+      <div className="bg-white border rounded-lg shadow-md">
         <div className="p-3 bg-black rounded-t">
-          <p className="font-semibold text-white">{sub?.title}</p>
           <p className="font-semibold text-white">{sub?.name}</p>
+          <Divider className="mb-3 mt-3 bg-white" />
           <p className="flex items-center mb-1 text-white">
             <span className="text-xs">{sub?.description}</span>
           </p>
@@ -62,49 +72,57 @@ export default function SideBar({ sub }: { sub: Sub }) {
           </p>
           <p className="flex items-center mb-1">
             <span className="flex items-center text-sm font-medium">
-              맴버수 : {sub?.subMemberCount}
+              맴버수 :{" "}
               {sub?.subMemberCount && (
-                <Tooltip
-                  placement="bottom"
-                  title={text}
-                  className="cursor-pointer"
-                >
-                  <CgUserList {...btnProps} />
-                </Tooltip>
+                <span className="flex items-center">
+                  {sub?.subMemberCount}
+                  <Tooltip
+                    placement="bottom"
+                    title={text}
+                    className="cursor-pointer"
+                  >
+                    <CgUserList {...btnProps} />
+                  </Tooltip>
+                </span>
               )}
             </span>
           </p>
-
-          {authenticated && (
-            <>
-              {user?.username !== sub.username &&
-              !sub.subMember?.some((el: any) => el === user?.username) ? (
-                <div
-                  className="w-full mx-0 my-2 text-center rounded border border-gray-300 hover:border-black hover:font-semibold transition cursor-pointer"
-                  onClick={() => handleRequestApproval(sub.username)}
-                >
-                  <p className="w-full inline-block p-2 text-xs text-black bg-white rounded">
-                    가입 신청
-                  </p>
-                  <p>{error.message}</p>
-                </div>
-              ) : (
-                ""
-              )}
-              {user?.username === sub.username ||
-              sub.subMember?.some((el: any) => el === user?.username) ? (
-                <p className="w-full mx-0 my-2 text-center rounded border border-gray-300 hover:border-black hover:font-semibold transition">
-                  <Link href={`/r/${sub.name}/create`} legacyBehavior>
-                    <a className="w-full inline-block p-2 text-xs text-black bg-white rounded">
-                      게시글 등록
-                    </a>
-                  </Link>
+          <>
+            {!ownSub &&
+            !sub.subMember?.some((el: any) => el === user?.username) ? (
+              <div
+                className="w-full mx-0 my-2 text-center rounded border border-gray-300 hover:border-black hover:font-semibold transition cursor-pointer"
+                onClick={() => handleRequestApproval(sub.username)}
+              >
+                <p className="w-full inline-block p-2 text-xs text-black bg-white rounded">
+                  가입 신청
                 </p>
-              ) : (
-                ""
-              )}
-            </>
-          )}
+                <p>{error.message}</p>
+              </div>
+            ) : (
+              ""
+            )}
+            {ownSub ||
+            sub.subMember?.some((el: any) => el === user?.username) ? (
+              <p className="w-full mx-0 my-2 text-center rounded-xl border border-gray-300 hover:border-black hover:font-semibold transition">
+                <Link href={`/r/${sub.name}/create`} legacyBehavior>
+                  <a className="w-full inline-block p-2 text-xs text-black">
+                    게시글 등록
+                  </a>
+                </Link>
+              </p>
+            ) : (
+              ""
+            )}
+            {ownSub && (
+              <div
+                className="w-full mx-0 my-2 text-center rounded-xl border border-gray-300 hover:border-blue-500 hover:text-blue-500 hover:font-semibold transition cursor-pointer"
+                onClick={() => setEdit(true)}
+              >
+                <p className="w-full inline-block p-2 text-xs">편집</p>
+              </div>
+            )}
+          </>
         </div>
       </div>
     </div>

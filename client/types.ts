@@ -43,10 +43,13 @@ export interface Post {
   voteScore?: number;
   commentCount?: number;
   imageUrl: string;
+  imageUrn: string;
   price: number;
   musicType: string;
   priceChoose: string;
   musicFileUrl: string;
+  musicFileUrn: string;
+  buyername: string;
 }
 
 export interface Comment {
@@ -59,4 +62,14 @@ export interface Comment {
 
   userVote: number;
   voteScore: number;
+}
+
+export interface Payment {
+  buyer_name: string;
+  buyer_music_title: string;
+  paid_amount: number;
+  buyer_tel: string;
+  buyer_email: string;
+  pg_provider?: Post;
+  success: boolean;
 }

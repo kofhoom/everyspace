@@ -1,6 +1,9 @@
-// 회원가입 페이지
-import RegisterListPage from "@/src/components/units/register/register.index";
+import RegisterList from "@/src/components/units/register/Register.index";
 
 export default function Register() {
-  return <RegisterListPage />;
+  return (
+    <div className="pt-16">
+      <RegisterList />
+    </div>
+  );
 }

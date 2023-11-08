@@ -5,7 +5,7 @@ interface IInputGroupProps {
   className?: string;
   type?: string;
   placeholder?: string;
-  value: string;
+  value?: string;
   error?: string | undefined;
   disabled?: boolean;
   maxLength?: number;
@@ -47,7 +47,13 @@ export default function InputGroup({
         value={value}
         maxLength={maxLength}
       />
-      <small className="font-medium text-red-500">{error}</small>
+      <small
+        className={`font-medium ${
+          error === "비밀번호가 일치 합니다." ? "text-blue-500" : "text-red-500"
+        }`}
+      >
+        {error}
+      </small>
     </div>
   );
 }

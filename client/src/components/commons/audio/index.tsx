@@ -39,6 +39,7 @@ const AudioLayout = ({ audioUrl }: AudioProps) => {
 
   useEffect(() => {
     const audio = audioRef.current;
+
     if (audio) {
       if (play) {
         audio.play();
@@ -114,7 +115,9 @@ const AudioLayout = ({ audioUrl }: AudioProps) => {
       </div>
       {!authenticated && (
         <div className="absolute top-0 left-0 bg-gray-300 bg-opacity-50  h-full w-full flex justify-center items-center">
-          <p className="font-medium text-sm">로그인 후 이용 가능합니다.</p>
+          <p className="font-medium text-sm text-gray-500">
+            로그인 후 이용 가능합니다.
+          </p>
         </div>
       )}
     </div>

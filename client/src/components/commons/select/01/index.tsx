@@ -8,7 +8,7 @@ interface ISelectGroupProps {
   option?: any;
   name?: string;
   setValue: (str: string) => void;
-  onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
+  onChange?: (e: ChangeEvent<HTMLSelectElement>) => void;
 }
 
 export default function SelectGroup({
@@ -35,7 +35,9 @@ export default function SelectGroup({
         name={name}
       >
         {option?.map((el: any, index: any) => (
-          <option key={index}>{el?.values ?? ""}</option>
+          <option key={index} data-name={el?.key}>
+            {el?.values ?? ""}
+          </option>
         ))}
       </select>
       <small className="font-medium text-red-500">{error}</small>

@@ -1,3 +1,7 @@
+declare const window: typeof globalThis & {
+  IMP: any;
+};
+
 import { useAuthState } from "@/src/context/auth";
 import { Post } from "@/types";
 import { Comment } from "@/types";
@@ -7,12 +11,11 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FormEvent, useState, useRef } from "react";
 import useSwR, { mutate } from "swr";
-import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import AudioLayout from "@/src/components/commons/audio";
 import { FaHotjar } from "react-icons/fa";
+import { FaRegCopy } from "react-icons/fa";
 import { Button, Space, Dropdown, type MenuProps, Divider, Tag } from "antd";
 import type { SizeType } from "antd/es/config-provider/SizeContext";
-import { FaRegCopy } from "react-icons/fa";
 import { handleCopyClipBoard } from "@/utils/helpers";
 
 export default function PostContentPage() {
@@ -22,14 +25,21 @@ export default function PostContentPage() {
   const [newComment, setNewComment] = useState("");
   const downloadAtag = useRef<HTMLAnchorElement>(null);
   const [size, setSize] = useState<SizeType>("small"); // default is 'middle'
+
   // 포스트 삭제
   const handlePostDelete = async () => {
     try {
       await axios.post(`/posts/${post?.identifier}/${post?.slug}/delete`);
-      router.push(`/r/${sub}`);
+      if (sub === null) router.push(`/r/${sub}`);
+      else router.push(`/`);
     } catch (error) {
       console.log(error);
     }
+  };
+
+  // 포스트 수정
+  const handlePostEdit = async () => {
+    router.push(`/r/${sub}/${post?.identifier}/${post?.slug}/update`);
   };
 
   // 포스트 리스트 가져오기
@@ -40,6 +50,7 @@ export default function PostContentPage() {
   } = useSwR<Post>(identifier && slug ? `/posts/${identifier}/${slug}` : null);
 
   const isOwnUser = user?.username === post?.username; // 자신 글 & 댓글 여부
+  const isBuying = user?.username === post?.buyername; // 구매여부
 
   // 포스트 댓글 가져오기
   const { data: comments, mutate: commentMutate } = useSwR<Comment[]>(
@@ -118,6 +129,10 @@ export default function PostContentPage() {
     if (e.key === "삭제") {
       handlePostDelete();
     }
+
+    if (e.key === "수정") {
+      handlePostEdit();
+    }
   };
 
   const downloadHandler = () => {
@@ -127,11 +142,66 @@ export default function PostContentPage() {
     }
     downloadAtag.current?.click();
   };
+  const onClickPayment = async () => {
+    if (!authenticated) return router.push("/login");
+    if (isOwnUser) return window.alert("자신의 곡은 구매하실 수 없습니다.");
 
+    const IMP = window.IMP;
+    IMP.init("imp35254072");
+    IMP.request_pay(
+      {
+        // param
+        pg: "kakaopay",
+        pay_method: "card",
+        //  merchant_uid: "ORD20180131-0000011",
+        name: post?.title,
+        amount: post?.price,
+        buyer_email: user?.email,
+        buyer_name: user?.username,
+        buyer_tel: "01042424242",
+        buyer_addr: "서울특별시 강남구 신사동",
+        buyer_postcode: "01181",
+        // m_redirect_url: "http://localhost:3000/section28/28-01-payment",
+        // 모바일에서는 결제시, 페이지 주소가 바뀜. 따라서 결제 끝나고 들어갈 주소가 필요
+      },
+      async (rsp: any) => {
+        // callback
+        if (rsp.success === true) {
+          // 결제 성공 시 로직,
+          console.log(rsp);
+          try {
+            // 이미지 업로드 API 호출
+            const { data } = await axios.post(
+              `/payments/${post?.identifier}/${post?.slug}`,
+              {
+                buyer_music_title: rsp.name,
+                buyer_name: rsp.buyer_name,
+                seller_name: post?.username,
+                paid_amount: rsp.paid_amount,
+                buyer_email: rsp.buyer_email,
+                buyer_tel: rsp.buyer_tel,
+                pg_provider: rsp.pg_provider,
+                success: rsp.success,
+              }
+            );
+
+            console.log(data);
+            postMutate();
+          } catch (error) {
+            console.log(error);
+          }
+          // 백엔드에 결제관련 데이터 넘겨주기 => 즉, 뮤테이션 실행하기
+        } else {
+          // 결제 실패 시 로직,
+        }
+      }
+    );
+  };
   return (
     <div className="flex max-w-7xl px-4 pt-5 justify-center m-auto">
+      <script src="https://cdn.iamport.kr/v1/iamport.js" defer></script>
       <div className="w-full md:w-8/12">
-        <div className="bg-white rounded-md shadow-md overflow-hidden">
+        <div className="bg-white border rounded-md shadow-md overflow-hidden pb-6">
           {post && (
             <>
               {post.musicFileUrl && (
@@ -151,7 +221,7 @@ export default function PostContentPage() {
                       </h1>
                       <p className="text-xs text-gray-400">
                         by
-                        <Link href={`/u/${post.username}`} legacyBehavior>
+                        <Link href={`/mystore/${post.username}`} legacyBehavior>
                           <a className="mx-1 hover:underline">
                             {post.username}
                           </a>
@@ -181,26 +251,33 @@ export default function PostContentPage() {
                     </div>
 
                     <p className="my-4 text-sm mb-5">{post.body}</p>
-                    {post.priceChoose === "free" ? (
-                      <Button
-                        type="primary"
-                        className="hover:outline-black font-medium"
-                        block
-                        size={"large"}
-                        onClick={downloadHandler}
-                      >
-                        다운로드
-                      </Button>
-                    ) : (
-                      <Button
-                        type="primary"
-                        className="hover:outline-black font-medium"
-                        block
-                        size={"large"}
-                      >
-                        구매
-                      </Button>
+                    {!isOwnUser && (
+                      <>
+                        {post.priceChoose === "free" ? (
+                          <Button
+                            type="primary"
+                            className="hover:outline-black font-medium"
+                            block
+                            size={"large"}
+                            onClick={downloadHandler}
+                          >
+                            다운로드
+                          </Button>
+                        ) : (
+                          <Button
+                            type="primary"
+                            className="hover:outline-black font-medium"
+                            block
+                            size={"large"}
+                            onClick={onClickPayment}
+                            disabled={isBuying ? true : false}
+                          >
+                            {isBuying ? "구매완료" : "구매"}
+                          </Button>
+                        )}
+                      </>
                     )}
+
                     <Divider orientation="left" plain></Divider>
                     <div className="text-xs">
                       <span>released </span>
@@ -237,7 +314,7 @@ export default function PostContentPage() {
                         size={size}
                         onClick={() => vote(1)}
                       >
-                        Like {post.voteScore}
+                        좋아요 {post.voteScore}
                       </Button>
                       <Button
                         block
@@ -248,7 +325,7 @@ export default function PostContentPage() {
                           `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}${post.url}`
                         )}
                       >
-                        Copy Link
+                        링크 공유
                       </Button>
                       {isOwnUser && (
                         <Dropdown.Button
@@ -256,26 +333,10 @@ export default function PostContentPage() {
                           size={size}
                           menu={{ items, onClick: onMenuClick }}
                         >
-                          More
+                          더 보기
                         </Dropdown.Button>
                       )}
                     </Space>
-
-                    <div className="flex items-center">
-                      {/* {isOwnUser && (
-                        <div className="ml-auto">
-                          <span
-                            className="text-xs text-gray-400 mr-2 hover:underline hover:text-gray-500 cursor-pointer"
-                            onClick={handlePostDelete}
-                          >
-                            삭제
-                          </span>
-                          <span className="text-xs text-gray-400 mr-2 hover:underline hover:text-gray-500 cursor-pointer">
-                            수정
-                          </span>
-                        </div>
-                      )} */}
-                    </div>
                   </div>
                 </div>
               </div>
@@ -325,46 +386,33 @@ export default function PostContentPage() {
               </div>
               {/* 댓글 리스트 부분 */}
               {comments?.map((comment) => (
-                <div className="flex" key={comment.identifier}>
-                  {/* 좋아요 싫어요 기능 부분 */}
-                  <div className="flex-shrink-0 w-10 py-2 text-center rounded-l">
-                    {/* 좋아요 */}
-                    <div
-                      className="flex justify-center w-6 mx-auto text-gray-400 rounded cursor-pointer hover:bg-gray-300 hover:text-red-500"
-                      onClick={() => vote(1, comment)}
-                    >
-                      {comment.userVote === 1 ? (
-                        <FaArrowUp className="mx-auto text-red-500" />
-                      ) : (
-                        <FaArrowUp />
-                      )}
-                    </div>
-                    <p className="text-xs font-bold">{comment.voteScore}</p>
-                    {/* 싫어요 */}
-                    <div
-                      className="flex justify-center w-6 mx-auto text-gray-400 rounded cursor-pointer hover:bg-gray-300 hover:text-blue-500"
-                      onClick={() => vote(-1, comment)}
-                    >
-                      {comment.userVote === -1 ? (
-                        <FaArrowDown className="mx-auto text-blue-500" />
-                      ) : (
-                        <FaArrowDown />
-                      )}
-                    </div>
-                  </div>
-                  <div className="py-2 pr-2 w-full">
+                <div className="flex flex-col-reverse" key={comment.identifier}>
+                  <div className="w-full px-4">
                     <div className="flex items-center mb-1">
-                      <p className=" text-xs leading-none">
+                      <p className="flex items-center text-xs leading-none">
                         <Link href={`/u/${comment.username}`} legacyBehavior>
                           <a className="mr-1 font-bold hover:underline">
                             {comment.username}
                           </a>
                         </Link>
                         <span className="text-gray-600">
-                          {`${comment.voteScore} posts ${dayjs(
-                            comment.createdAt
-                          ).format("YYYY-MM-DD HH:mm")}`}
+                          {`작성일 ${dayjs(comment.createdAt).format(
+                            "YYYY-MM-DD HH:mm"
+                          )}`}
                         </span>
+                        <div
+                          className="ml-2 flex item-center w-6 mx-auto text-gray-400 rounded cursor-pointer hover:bg-gray-300 hover:text-red-500"
+                          onClick={() => vote(1, comment)}
+                        >
+                          {comment.userVote === 1 ? (
+                            <FaHotjar className="mx-auto text-red-500" />
+                          ) : (
+                            <FaHotjar />
+                          )}
+                          <p className="ml-1 text-xs font-bold">
+                            {comment.voteScore}
+                          </p>
+                        </div>
                       </p>
                       {/* 댓글 삭제 */}
                       {isOwnUser && (
@@ -379,16 +427,20 @@ export default function PostContentPage() {
                       )}
                     </div>
                     <p>{comment.body}</p>
+                    <Divider className="mb-3"></Divider>
                   </div>
                 </div>
               ))}
             </>
           )}
-        </div>
-        <div className="w-full flex justify-end mt-3">
-          <button onClick={() => router.replace(`/r/${sub}`)}>
-            <a className="px-3 py-1 text-white bg-black rounded">목록</a>
-          </button>
+          <div className="w-full flex flex-col items-end px-6">
+            <Divider></Divider>
+            <button
+              onClick={() => router.replace(`${sub ? "/" : `/r/${sub}`}`)}
+            >
+              <a className="px-9 py-1 text-white bg-black rounded-lg">목록</a>
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -5,6 +5,8 @@ import Post from "./Post";
 import Vote from "./Vote";
 import BaseEntity from "./Entity";
 import { Expose } from "class-transformer";
+import Sub from "./Sub";
+import Payment from "./Payment";
 
 @Entity("users")
 export class User extends BaseEntity {
@@ -27,6 +29,9 @@ export class User extends BaseEntity {
   userImageUrn: string;
 
   @Column({ nullable: true })
+  userBannerUrn: string;
+
+  @Column({ nullable: true })
   isApproved: Boolean;
 
   @Column("simple-array", { nullable: true })
@@ -38,11 +43,27 @@ export class User extends BaseEntity {
   @OneToMany(() => Vote, (vote) => vote.user)
   votes: Vote[];
 
+  @OneToMany(() => Sub, (sub) => sub.user)
+  sub: Sub[];
+
+  @OneToMany(() => Payment, (payment) => payment.user)
+  payment: Payment[];
+
+  @Column({ default: false }) // 거절 당한 사용자 여부
+  isRejected: Boolean;
+
   @Expose()
   get userImageUrl(): string {
     return this.userImageUrn
       ? `${process.env.APP_URL}/images/${this.userImageUrn}`
       : "https://www.gravatar.com/avatar?d=mp&f=y";
+  }
+
+  @Expose()
+  get userBannerUrl(): string {
+    return this.userBannerUrn
+      ? `${process.env.APP_URL}/images/${this.userBannerUrn}`
+      : null;
   }
 
   protected userVote: number;

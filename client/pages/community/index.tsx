@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import axios from "axios";
+import { Divider, Empty } from "antd";
 
 export default function Home() {
   const getKey = (pageIndex: number, previousPageData: Post[]) => {
@@ -23,6 +24,7 @@ export default function Home() {
 
   const isInitialLoading = !data && !error;
   const posts: Post[] = data ? ([] as Post[]).concat(...data) : [];
+  const isPostsData = posts?.length === 0;
 
   const [observePost, setObservedPost] = useState("");
 
@@ -63,16 +65,36 @@ export default function Home() {
   return (
     <main className="flex max-w-6xl px-4 mx-auto pt-5">
       {/* 포스트 리스트 */}
-      <div className="w-full layout2">
+      <div className="w-full section-layout border shadow-md">
+        <div className="w-full">
+          <h2 className="main-section-title ">아지트 전체글 </h2>
+          <Divider className="mb-5 mt-2" />
+        </div>
         {isInitialLoading && (
           <p className="text-lg text-center">로딩중입니다.</p>
         )}
-        {posts?.map(
-          (post) =>
-            post.subName !== "nomal" && (
-              <PostCardList key={post.identifier} post={post} mutate={mutate} />
-            )
+        {isPostsData || posts[0]?.subName === null ? (
+          <>
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />{" "}
+            <p className="text-lg text-center text-gray-300">
+              데이터가 없습니다.
+            </p>
+          </>
+        ) : (
+          ""
         )}
+        <div className="w-full layout2">
+          {posts?.map(
+            (post) =>
+              post.subName !== null && (
+                <PostCardList
+                  key={post.identifier}
+                  post={post}
+                  mutate={mutate}
+                />
+              )
+          )}
+        </div>
       </div>
       {/* 커뮤니티 리스트 */}
       {authRoute && <BoardCommunityList />}
