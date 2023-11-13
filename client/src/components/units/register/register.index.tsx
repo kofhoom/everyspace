@@ -10,6 +10,7 @@ import { Divider } from "antd";
 interface FormData {
   username: string;
   email: string;
+  tel: string;
   password: string | number | any;
 }
 
@@ -17,6 +18,7 @@ export default function RegisterList() {
   const [formData, setFormData] = useState<FormData>({
     username: "",
     email: "",
+    tel: "",
     password: "",
   });
 
@@ -24,12 +26,10 @@ export default function RegisterList() {
   const [passwordChack, setPasswordChack] = useState("");
   const [errors, setErrors] = useState<any>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { authenticated } = useAuthState();
+  // const { authenticated } = useAuthState();
 
   const router = useRouter();
-
-  if (authenticated) router.push("/"); //이미 로그인된 유져는 리다이렉트 시킴
-  // 이미지 파일 프리뷰 처리
+  // if (authenticated) router.push("/"); //이미 로그인된 유져는 리다이렉트 시킴
 
   // 폼 입력값 변경 핸들러
   const handleChange = (e: any) => {
@@ -54,11 +54,12 @@ export default function RegisterList() {
     formData.username &&
     formData.email &&
     formData.password &&
+    formData.tel &&
     isPassWordChack
   );
 
   const uploadImage = async (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files === null) return;
+    if (!event.target.files) return;
     const file = event.target.files[0];
 
     if (file?.type === "audio/mpeg" || file?.type === "audio/wav") {
@@ -66,8 +67,11 @@ export default function RegisterList() {
       return;
     }
 
-    const fileName = URL.createObjectURL(file);
-    setImgUrl(fileName);
+    if (file) {
+      const fileName = URL.createObjectURL(file);
+      setImgUrl(fileName);
+    }
+
     setErrors({});
   };
 
@@ -116,6 +120,7 @@ export default function RegisterList() {
       }
     }
   };
+
   return (
     <div className="bg-white">
       <input
@@ -180,6 +185,21 @@ export default function RegisterList() {
                 }
                 onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
                 error={errors.username}
+              />
+            </div>
+            <Divider className="mb-5 mt-3" />
+            <div className="flex items-start flex-col">
+              <p className="text-sm mb-2 font-semibold">전화번호: </p>
+              <InputGroup
+                placeholder="전화번호"
+                name="tel"
+                type="number"
+                value={formData.tel}
+                setValue={(str: string) =>
+                  setFormData({ ...formData, tel: str })
+                }
+                onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
+                error={errors.tel}
               />
             </div>
             <Divider className="mb-5 mt-3" />

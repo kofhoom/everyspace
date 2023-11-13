@@ -1,16 +1,14 @@
-import { Comment, Payment, Post } from "@/types";
+import { Post } from "@/types";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 import PostCardList from "../post/cardList/PostCardList.index";
-import Link from "next/link";
 import Image from "next/image";
 import { Tabs, Button } from "antd";
 import type { TabsProps } from "antd";
 import { TfiWrite } from "react-icons/tfi";
-import { Space, Dropdown, type MenuProps, Divider, Tag } from "antd";
+import { Space } from "antd";
 
 import axios from "axios";
-import { AiOutlineComment } from "react-icons/ai";
 import { useRef, useState, useEffect } from "react";
 import type { ChangeEvent } from "react";
 import { useAuthState } from "@/src/context/auth";
@@ -72,7 +70,7 @@ export default function MyStoreList() {
       label: `${data.user.username}의 음악`,
       children: (
         <>
-          <div className="w-full section-layout border shadow-md">
+          <div className="w-full section-layout border shadow-md  ms:px-5">
             <p className="flex items-center text-2xl font-medium pb-3 mb-4 border-b border-b-gray-300">
               <TfiWrite className="mr-2" /> {data.user.username}의 음악
             </p>
@@ -94,67 +92,9 @@ export default function MyStoreList() {
         </>
       ),
     },
-    {
-      key: "2",
-      label: "댓글",
-      children: (
-        <div className="w-full section-layout border shadow-md">
-          <p className="flex items-center text-2xl font-medium pb-3 mb-4 border-b border-b-gray-300">
-            <AiOutlineComment className="mr-2" /> 댓글
-          </p>
-          {data.userData.map((data: any) => {
-            if (data.type === "Comment") {
-              const comment: Comment = data;
-              return (
-                <>
-                  <div
-                    key={comment.identifier}
-                    className="flex my-4 bg-white rounded"
-                  >
-                    <div className="flex-shrink-0 w-10 py-10 text-center bg-white border-r rounded-l">
-                      <i className="text-gray-500 fas fa-comment-alt fa-xs"></i>
-                    </div>
-                    <div className="w-full p-2">
-                      <p className="mb-2 text-xs text-gray-500">
-                        <Link href={`/u/${comment.username}`} legacyBehavior>
-                          <a className="cusor-pointer hover:underline mr-1">
-                            {comment.username}
-                          </a>
-                        </Link>
-                        <span className="mr-1">command on</span>
-                        <Link href={`/${comment.post?.url}`} legacyBehavior>
-                          <a className="cusor-pointer font-semibold hover:underline mr-1">
-                            {comment.post?.title}
-                          </a>
-                        </Link>
-                        {comment.post?.subName && (
-                          <>
-                            <span>·</span>
-                            <Link
-                              href={`/u/${comment.post?.subName}`}
-                              legacyBehavior
-                            >
-                              <a className="cusor-pointer font-semibold hover:underline">
-                                /r/{comment.post?.subName}
-                              </a>
-                            </Link>
-                          </>
-                        )}
-                      </p>
-                      <hr />
-                      <p className="p-1">{comment.body}</p>
-                    </div>
-                  </div>
-                </>
-              );
-            }
-          })}
-        </div>
-      ),
-    },
   ];
   return (
-    <div className=" max-w-5xl px-4 pt-5 mx-auto">
+    <div className=" max-w-5xl px-4 pt-5 mx-auto mb-5">
       <input
         type="file"
         hidden={true}
@@ -257,15 +197,6 @@ export default function MyStoreList() {
           >
             링크 공유
           </Button>
-          {/* {isOwnUser && (
-          <Dropdown.Button
-            type="primary"
-            size={size}
-            menu={{ items, onClick: onMenuClick }}
-          >
-            더 보기
-          </Dropdown.Button>
-        )} */}
         </Space>
       </div>
       <Tabs

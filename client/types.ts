@@ -7,9 +7,11 @@ export interface User {
   updatedAt: string;
   approvalRequsts: any[];
   isApproved: Boolean;
+  tel: string;
 }
 
 export interface Sub {
+  id: number;
   createdAt: string;
   updatedAt: string;
   name: string;
@@ -37,13 +39,14 @@ export interface Post {
   createdAt: string;
   updatedAt: string;
   sub?: Sub;
+  user?: User;
   userImage: string;
   url: string;
   userVote?: number;
   voteScore?: number;
   commentCount?: number;
-  imageUrl: string;
-  imageUrn: string;
+  imageUrl: string | undefined;
+  imageUrn: string | undefined;
   price: number;
   musicType: string;
   priceChoose: string;

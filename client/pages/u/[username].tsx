@@ -1,4 +1,4 @@
-import UserList from "@/src/components/units/user/userList.index";
+import UserList from "@/src/components/units/user/UserList.index";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 
@@ -10,7 +10,6 @@ export default function UserPage() {
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   try {
     const cookie = req.headers.cookie;
-    console.log(cookie);
     // 쿠키가 없다면 에러를 보내기
     if (!cookie) throw Error("Missing auth token cookie");
 

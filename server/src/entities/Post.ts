@@ -3,6 +3,7 @@ import {
   BeforeInsert,
   Column,
   Entity,
+  In,
   Index,
   JoinColumn,
   ManyToOne,
@@ -98,7 +99,7 @@ export default class Post extends BaseEntity {
   get imageUrl(): string {
     return this.imageUrn
       ? `${process.env.APP_URL}/images/${this.imageUrn}`
-      : null;
+      : `${process.env.APP_URL}/common/mainLogo.png`;
   }
 
   @Expose()

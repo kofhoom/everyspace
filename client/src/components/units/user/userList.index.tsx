@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import useSwR from "swr";
 import PostCardList from "../post/cardList/PostCardList.index";
 import Link from "next/link";
-import { Tabs, Button } from "antd";
+import { Tabs, Button, Empty } from "antd";
 import type { TabsProps } from "antd";
 import BasicTable from "../../commons/table";
 import axios from "axios";
@@ -17,8 +17,11 @@ export default function UserList() {
     username ? `/users/${username}` : null
   );
 
-  console.log(data);
   if (!data) return null;
+  const myPostListArry = data.userData.filter((el: any) => el.type == "Post");
+  const myCommentListArry = data.userData.filter(
+    (el: any) => el.type == "Comment"
+  );
 
   const userPayListArry = data.userData.filter(
     (el: any) => el.type == "Payment"
@@ -27,6 +30,39 @@ export default function UserList() {
   const userSellingPostListArry = data.userData.filter(
     (el: any) => el.type == "myPostSellItems"
   );
+
+  const handleDownload = (address: string) => async (e: any) => {
+    const rep: string | undefined = address.split("/").at(-1);
+    try {
+      const response = await axios.get(`/download/music/${rep}`, {
+        responseType: "blob", // 요청의 응답 형식을 blob으로 설정
+      });
+
+      // Blob을 URL로 변환
+      const url = window.URL.createObjectURL(response.data);
+
+      // a 태그를 생성하여 다운로드 링크 설정
+      const a = document.createElement("a");
+      a.href = url;
+
+      // 추출된 파일 이름 설정 (예시: 'example.wav')
+      const filename = rep;
+      a.download = filename ?? "";
+
+      // a 태그를 body에 추가하고 클릭하여 다운로드
+      document.body.appendChild(a);
+      a.click();
+
+      // a 태그 제거
+      document.body.removeChild(a);
+
+      // Blob URL 해제
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading music", error);
+    }
+  };
+
   const handleApproveReject = (type: string) => async (event: any) => {
     const userId = event.currentTarget.getAttribute("data-username"); // 이벤트 데이터 속성에서 username 가져오기
     if (!userId) return window.alert("사용자 id가 없습니다.");
@@ -78,11 +114,12 @@ export default function UserList() {
       ),
     },
   ];
+
   const paymentColumns = [
     {
       title: "판매자",
       dataIndex: "seller_name",
-      key: "buyer_name",
+      key: "seller_name",
     },
     {
       title: "구매 곡 이름",
@@ -93,14 +130,17 @@ export default function UserList() {
       title: "구매 제품 가격",
       dataIndex: "paid_amount",
       key: "paid_amount",
+      render: (el: number) => (
+        <p>{[el].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " 원"}</p>
+      ),
     },
     {
-      title: "구매자 전화번호",
+      title: "판매자 전화번호",
       dataIndex: "buyer_tel",
       key: "buyer_tel",
     },
     {
-      title: "구매자 이메일",
+      title: "판매자 이메일",
       dataIndex: "buyer_email",
       key: "buyer_email",
     },
@@ -114,6 +154,14 @@ export default function UserList() {
       dataIndex: "success",
       key: "success",
       render: (el: boolean) => <p>{el ? "구매완료" : "실패"}</p>,
+    },
+    {
+      title: "다운로드",
+      dataIndex: "musicFileUrl",
+      key: "musicFileUrl",
+      render: (el: string) => (
+        <Button onClick={handleDownload(el)}>다운로드</Button>
+      ),
     },
   ];
 
@@ -137,6 +185,7 @@ export default function UserList() {
       ),
     },
   ];
+
   const items: TabsProps["items"] = [
     {
       key: "1",
@@ -146,15 +195,28 @@ export default function UserList() {
           <p className="flex items-center text-2xl font-medium pb-3 mb-4 border-b border-b-gray-300">
             <TfiWrite className="mr-2" /> 내가 쓴 글
           </p>
-          <div className="layout2">
+          <div className={data.type !== "Post" ? "" : "layout2"}>
+            {myPostListArry.length === 0 && (
+              <>
+                <div className="flex flex-col justify-center w-full">
+                  <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                  <p className="text-lg text-center text-gray-300">
+                    데이터가 없습니다.
+                  </p>
+                </div>
+              </>
+            )}
             {data.userData.map((data: any) => {
               if (data.type === "Post") {
                 const post: Post = data;
-                return (
-                  <>
-                    <PostCardList key={post.identifier} post={post} />
-                  </>
-                );
+                if (post) {
+                  return (
+                    <>
+                      <div>{data.type}</div>
+                      <PostCardList key={post.identifier} post={post} />
+                    </>
+                  );
+                }
               }
             })}
           </div>
@@ -169,6 +231,16 @@ export default function UserList() {
           <p className="flex items-center text-2xl font-medium pb-3 mb-4 border-b border-b-gray-300">
             <AiOutlineComment className="mr-2" /> 내가 쓴 댓글
           </p>
+          {myCommentListArry.length === 0 && (
+            <>
+              <div className="flex flex-col justify-center w-full">
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                <p className="text-lg text-center text-gray-300">
+                  데이터가 없습니다.
+                </p>
+              </div>
+            </>
+          )}
           {data.userData.map((data: any) => {
             if (data.type === "Comment") {
               const comment: Comment = data;
@@ -222,7 +294,6 @@ export default function UserList() {
     {
       key: "3",
       label: "맴버가입 신청 리스트",
-
       children: (
         <div className="w-full section-layout">
           <p className="flex items-center text-2xl font-medium pb-3 mb-4 border-b border-b-gray-300">
@@ -239,25 +310,19 @@ export default function UserList() {
     {
       key: "4",
       label: "구매 곡 목록",
-
       children: (
         <div className="w-full section-layout">
           <p className="flex items-center text-2xl font-medium pb-3 mb-4 border-b border-b-gray-300">
             <AiOutlineOrderedList className="mr-2" /> 구매 곡 목록
           </p>
 
-          <BasicTable
-            columns={paymentColumns}
-            data={userPayListArry}
-            type={"user"}
-          />
+          <BasicTable columns={paymentColumns} data={userPayListArry} />
         </div>
       ),
     },
     {
       key: "5",
       label: "나의 곡 판매현황",
-
       children: (
         <div className="w-full section-layout">
           <p className="flex items-center text-2xl font-medium pb-3 mb-4 border-b border-b-gray-300">
@@ -272,6 +337,7 @@ export default function UserList() {
       ),
     },
   ];
+
   return (
     <div className="max-w-5xl px-4 pt-5 mx-auto">
       <Tabs
@@ -281,7 +347,6 @@ export default function UserList() {
         tabPosition={"left"}
         type="card"
       />
-      {/* 유저 포스트 댓글 리스트 */}
     </div>
   );
 }

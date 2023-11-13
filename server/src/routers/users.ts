@@ -6,7 +6,6 @@ import Comment from "../entities/Comment";
 import { AppDataSource } from "../data-source";
 import Payment from "../entities/Payment";
 
-const router = Router();
 const getUsersData = async (req: Request, res: Response) => {
   try {
     // 유져정보 가져오기
@@ -55,6 +54,7 @@ const getUserData = async (req: Request, res: Response) => {
     // 유져 구매정보 가져오기
     const payment = await Payment.find({
       where: { buyer_name: user.username },
+      relations: ["user"],
     });
 
     if (res.locals.user) {
@@ -106,6 +106,7 @@ const userDataDelete = async (req: Request, res: Response) => {
     return res.status(404).json({ error: "문제가 발생 하였습니다." });
   }
 };
+const router = Router();
 
 router.get("/:username", userMiddleware, getUserData);
 router.post("/:username/delete", userMiddleware, userDataDelete);

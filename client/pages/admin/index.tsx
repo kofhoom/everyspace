@@ -1,7 +1,7 @@
 import axios from "axios";
 import { GetServerSideProps } from "next";
 
-// src/App.js
+// 어드민 메인 페이지
 import { Layout } from "antd";
 import AdminSidebar from "@/src/components/admin/commons/sidebar/admin.sidebarList.index";
 import AdminNavbar from "@/src/components/admin/commons/navBar/admin.navBarList.index";
@@ -34,7 +34,6 @@ export default App;
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   try {
     const cookie = req.headers.cookie;
-    console.log(cookie);
     // 쿠키가 없다면 에러를 보내기
     if (!cookie) throw Error("Missing auth token cookie");
 

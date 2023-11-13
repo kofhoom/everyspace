@@ -27,6 +27,7 @@ const paymentListCreate = async (req: Request, res: Response) => {
     buyer_tel,
     pg_provider,
     success,
+    musicFileUrl,
   } = req.body;
 
   try {
@@ -43,6 +44,7 @@ const paymentListCreate = async (req: Request, res: Response) => {
     payment.buyer_tel = buyer_tel;
     payment.pg_provider = pg_provider;
     payment.success = success;
+    payment.musicFileUrl = musicFileUrl;
 
     post.buyername = buyer_name;
 

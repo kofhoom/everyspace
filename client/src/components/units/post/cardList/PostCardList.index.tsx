@@ -6,7 +6,6 @@ import { useAuthState } from "@/src/context/auth";
 import axios from "axios";
 import { useRouter } from "next/router";
 import useSwR from "swr";
-import { timeForToday } from "@/utils/helpers";
 import AudioLayout from "@/src/components/commons/audio";
 import { Tag } from "antd";
 
@@ -25,6 +24,7 @@ export default function PostCardList({
     title,
     subName,
     createdAt,
+    body,
     voteScore,
     userVote,
     commentCount,
@@ -32,17 +32,19 @@ export default function PostCardList({
     sub,
     username,
     imageUrl,
+    imageUrn,
     musicFileUrl,
     musicType,
     price,
     priceChoose,
+    buyername,
   },
   mutate,
   subMutate,
   keyWord,
   type,
 }: IPostCardProps) {
-  const { authenticated, user } = useAuthState();
+  const { authenticated } = useAuthState();
   const router = useRouter();
 
   const isInSubPage = router.pathname === "/r/[sub]"; // 분기처리
@@ -76,7 +78,7 @@ export default function PostCardList({
       {/* 포스트 데이터 부분 */}
       <div
         className={`w-full p-4 ${
-          type === "mystore" ? "flex justify-between" : ""
+          type === "mystore" ? "flex justify-between ms:flex-col" : ""
         }`}
       >
         {type !== "mystore" && (
@@ -134,7 +136,9 @@ export default function PostCardList({
         )}
         <div
           className={` ${
-            type === "mystore" ? "store-img-w store-img-wrap" : "w-full"
+            type === "mystore"
+              ? "store-img-w store-img-wrap ms:max-w-full"
+              : "w-full"
           }`}
         >
           {imageUrl ? (
@@ -143,7 +147,9 @@ export default function PostCardList({
                 type === "mystore" ? "mystore-img" : "h-72"
               }`}
               style={{
-                backgroundImage: `url(${imageUrl})`,
+                backgroundImage: `url(${
+                  imageUrn === "undefined" ? "/mainLogo.png" : imageUrl
+                })`,
                 backgroundRepeat: "no-repeat",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
@@ -154,7 +160,13 @@ export default function PostCardList({
             <div className="h-72"></div>
           )}
         </div>
-        <div className={`${type === "mystore" ? "store-content-w" : "w-full"}`}>
+        <div
+          className={`${
+            type === "mystore"
+              ? "store-content-w sm:max-w-full ms:w-full"
+              : "w-full"
+          }`}
+        >
           <Link href={url} legacyBehavior>
             <a className="w-full inline-block text-xl font-medium my-4 mb-5 pb-3 border-b border-b-#e5e7eb">
               {keyWord
@@ -171,6 +183,14 @@ export default function PostCardList({
                       </span>
                     ))
                 : title}
+              {type == "catagory" && (
+                <p
+                  className="text-sm font-normal"
+                  style={{ color: "#00000073" }}
+                >
+                  {body}
+                </p>
+              )}
             </a>
           </Link>
           <div className="text-xm">
@@ -181,7 +201,20 @@ export default function PostCardList({
                 className="ml-2"
                 style={{ fontSize: "inherit" }}
               >
-                {musicType}
+                {keyWord
+                  ? musicType
+                      .replaceAll(keyWord, `@#$${keyWord}@#$`)
+                      .split("@#$")
+                      .map((el) => (
+                        <span
+                          key={identifier}
+                          className={el === keyWord ? "font-extrabold" : ""}
+                          style={{ color: el === keyWord ? "red" : "white" }}
+                        >
+                          {el}
+                        </span>
+                      ))
+                  : musicType}
               </Tag>
             </div>
           </div>
@@ -190,41 +223,47 @@ export default function PostCardList({
             <p>
               가격:{" "}
               <span className="inline-block mt-1 ml-2">
-                {priceChoose === "free"
+                {buyername
+                  ? "거래완료"
+                  : priceChoose === "free"
                   ? "무료"
-                  : "₩" +
-                    [price].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  : [price].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
+                    "원"}
               </span>{" "}
             </p>
           </div>
-          {musicFileUrl && <AudioLayout audioUrl={musicFileUrl} />}
-          <div className="flex justify-between items-center pt-4">
-            <div className="flex items-center">
-              <Link href={url} legacyBehavior>
-                <i className="mr-1 fas fa fa-comment-alt fa-xs"></i>
-              </Link>
+          {type !== "catagory" && (
+            <>
+              {musicFileUrl && <AudioLayout audioUrl={musicFileUrl} />}
+              <div className="flex justify-between items-center pt-4">
+                <div className="flex items-center">
+                  <Link href={url} legacyBehavior>
+                    <i className="mr-1 fas fa fa-comment-alt fa-xs"></i>
+                  </Link>
 
-              <span className="text-xs">댓글 {commentCount} 개</span>
-            </div>
-            <div className="flex flex-shrink-0 text-center justify-between">
-              {/* <span className="mx-1 text-xs">{timeForToday(createdAt)}</span> */}
-              <div className="flex">
-                {/* 좋아요 */}
-
-                <div
-                  className="w-6 mx-auto text-gray-400  cursor-pointer  hover:text-red-500"
-                  onClick={() => vote(1)}
-                >
-                  {userVote === 1 ? (
-                    <FaHotjar className="mx-auto text-red-500" />
-                  ) : (
-                    <FaHotjar className="mx-auto" />
-                  )}
+                  <span className="text-xs">댓글 {commentCount} 개</span>
                 </div>
-                <p className="text-xs font-bold ml-0.5">{voteScore}</p>
+                <div className="flex flex-shrink-0 text-center justify-between">
+                  {/* <span className="mx-1 text-xs">{timeForToday(createdAt)}</span> */}
+                  <div className="flex">
+                    {/* 좋아요 */}
+
+                    <div
+                      className="w-6 mx-auto text-gray-400  cursor-pointer  hover:text-red-500"
+                      onClick={() => vote(1)}
+                    >
+                      {userVote === 1 ? (
+                        <FaHotjar className="mx-auto text-red-500" />
+                      ) : (
+                        <FaHotjar className="mx-auto" />
+                      )}
+                    </div>
+                    <p className="text-xs font-bold ml-0.5">{voteScore}</p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            </>
+          )}
         </div>
       </div>
     </div>

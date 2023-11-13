@@ -231,7 +231,7 @@ const getPosts = async (req: Request, res: Response) => {
   try {
     const posts = await Post.find({
       order: { createdAt: "DESC" },
-      relations: ["sub", "votes", "comments"],
+      relations: ["sub", "votes", "comments", "user"],
       skip: currentPage * perPage,
       take: perPage,
     });
@@ -329,11 +329,66 @@ const deleteComments = async (req: Request, res: Response) => {
   }
 };
 
+// 포스트 카테고리 선택 결과
+const getCatagoryPost = async (req: Request, res: Response) => {
+  const { searchData, sortType } = req.params;
+
+  try {
+    const queryBuilder = await AppDataSource.getRepository(
+      Post
+    ).createQueryBuilder("entity");
+
+    if (searchData == "전체") {
+      queryBuilder
+        .leftJoinAndSelect("entity.sub", "sub")
+        .leftJoinAndSelect("entity.votes", "votes")
+        .leftJoinAndSelect("entity.comments", "comments")
+        .orderBy("DESC");
+    } else {
+      queryBuilder
+        .leftJoinAndSelect("entity.sub", "sub")
+        .leftJoinAndSelect("entity.votes", "votes")
+        .leftJoinAndSelect("entity.comments", "comments")
+        .where("entity.musicType LIKE :searchData", {
+          searchData: `%${searchData}%`,
+        });
+    }
+    // sortType에 따라 정렬 조건 추가
+    switch (sortType) {
+      case "최신순":
+        queryBuilder.orderBy("entity.createdAt", "DESC");
+        break;
+      case "저가순":
+        queryBuilder.orderBy("entity.price", "ASC");
+        break;
+      case "고가순":
+        queryBuilder.orderBy("entity.price", "DESC");
+        break;
+      default:
+        // 기본 정렬 조건 (최신순)
+        queryBuilder.orderBy("entity.createdAt", "DESC");
+        break;
+    }
+
+    const result = await queryBuilder.getMany();
+
+    if (!result) {
+      return res.status(404).json({ error: "데이터를 찾을 수 없습니다." });
+    }
+
+    return res.send(result);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "문제가 발생했습니다." });
+  }
+};
+
 const router = Router();
 
-router.post("/", userMiddleware, authMiddleware, createPost);
 router.get("/getAllPost", getAllPost);
+router.get("/getCatagoryPost/:searchData/:sortType", getCatagoryPost);
 router.get("/", userMiddleware, getPosts);
+router.post("/", userMiddleware, authMiddleware, createPost);
 router.get("/popularity", userMiddleware, getPopularityPosts);
 router.post(
   "/upload",

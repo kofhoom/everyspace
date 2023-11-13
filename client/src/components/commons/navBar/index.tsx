@@ -1,7 +1,9 @@
 import { useAuthDispatch, useAuthState } from "@/src/context/auth";
+import { Divider } from "antd";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
+import MobileNavBarList from "./mNavBar";
 
 export default function NaveBar() {
   const { loading, authenticated, user } = useAuthState();
@@ -35,12 +37,15 @@ export default function NaveBar() {
           </a>
         </Link>
       </div>
-      <div className="mr-auto">
+      <div className="mr-auto ms:hidden">
         <ul className="flex items-center">
           <li className="text-sm transition hover:font-semibold cursor-pointer mr-3">
             <Link href={`/mystore/${user?.username}`} legacyBehavior>
               <a className="text-xs">나의 상점</a>
             </Link>
+          </li>{" "}
+          <li className="text-sm mr-3">
+            <Divider className="ml-1 mr-1" type="vertical" />
           </li>
           <li className="text-sm transition hover:font-semibold cursor-pointer">
             <Link href={`/community`} legacyBehavior>
@@ -49,7 +54,7 @@ export default function NaveBar() {
           </li>
         </ul>
       </div>
-      <div className="ml-auto pr-5">
+      <div className="ml-auto pr-5 ms:hidden">
         <div className="text-sm  cursor-pointer mr-2">
           <button className="w-20 px-2 text-xs h-7 text-center text-gray-400 font-normal border-gray-300 hover:border-blue-500 hover:font-semibold hover:text-blue-500 transition rounded-xl border">
             <Link href={`/create`} legacyBehavior>
@@ -60,7 +65,7 @@ export default function NaveBar() {
           </button>
         </div>
       </div>
-      <div className="flex items-center">
+      <div className="flex items-center ms:hidden">
         {!loading &&
           (authenticated ? (
             <>
@@ -108,6 +113,14 @@ export default function NaveBar() {
               </Link>
             </div>
           ))}
+      </div>
+      <div>
+        <MobileNavBarList
+          loading={loading}
+          authenticated={authenticated}
+          user={user}
+          handleLogout={handleLogout}
+        />
       </div>
     </div>
   );

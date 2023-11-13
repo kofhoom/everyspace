@@ -1,5 +1,9 @@
-import CommunityDetailList from "@/src/components/units/communityList/detail";
+import AgitDetailList from "@/src/components/units/agit/detail/AgitDetailList";
 
 export default function CommunityDetailPage() {
-  return <CommunityDetailList />;
+  return (
+    <div style={{ marginTop: "9px" }}>
+      <AgitDetailList />
+    </div>
+  );
 }

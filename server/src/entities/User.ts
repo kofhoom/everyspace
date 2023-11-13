@@ -25,6 +25,9 @@ export class User extends BaseEntity {
   @Length(6, 255, { message: "비밀번호는 6자리 이상이어야 합니다." })
   password: string;
 
+  @Column({ nullable: true })
+  tel: string;
+
   @Column({ unique: true, nullable: true })
   userImageUrn: string;
 
@@ -46,7 +49,9 @@ export class User extends BaseEntity {
   @OneToMany(() => Sub, (sub) => sub.user)
   sub: Sub[];
 
-  @OneToMany(() => Payment, (payment) => payment.user)
+  @OneToMany(() => Payment, (payment) => payment.user, {
+    cascade: true,
+  })
   payment: Payment[];
 
   @Column({ default: false }) // 거절 당한 사용자 여부

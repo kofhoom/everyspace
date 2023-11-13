@@ -69,7 +69,6 @@ export const uploadMusic = multer({
     },
   }),
   fileFilter: (_, file: any, callback: FileFilterCallback) => {
-    console.log(file.mimetype);
     if (file.mimetype === "audio/mpeg" || file.mimetype === "audio/wav") {
       callback(null, true);
     } else {
@@ -101,3 +100,10 @@ export function timeForToday(value: string) {
 
   return `${Math.floor(betweenTimeDay / 365)}년전`;
 }
+
+// 임시 비밀번호 생성 함수
+export const generateTemporaryPassword = () => {
+  // 원하는 방식으로 임시 비밀번호 생성
+  // 예: Math.random()을 사용하여 무작위 문자열 생성
+  return Math.random().toString(36).substring(7);
+};

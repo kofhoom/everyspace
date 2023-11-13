@@ -60,13 +60,14 @@ const AdminDetailsList = ({ data, title }: IDetailsProps) => {
       subMemberCount: "맴버 수",
       subMember: "맴버 리스트",
       buyer_music_title: "구매 제품 제목",
-      buyer_email: "구매자 이메일",
+      buyer_email: "판매자 이메일",
       paid_amount: "제품 가격",
       pg_provider: "구매방식",
       buyer_name: "구매자",
       buyer_tel: "구매자 전화번호",
       success: "구매 성공 여부",
       seller_name: "상품 판매자",
+      type: "결제 방식",
     };
 
     koLang = map[labels] || labels;

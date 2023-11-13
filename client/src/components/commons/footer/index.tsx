@@ -13,12 +13,16 @@ function FooterLayout() {
         style={{ textAlign: "center" }}
       >
         <div className="w-full">
-          <img
-            src="/mainLogo.png"
-            alt="Company Logo"
-            className="mb-2"
-            style={{ height: "30px" }}
-          />
+          <div className="flex items-center mb-2">
+            <img
+              src="/mainLogo.png"
+              alt="Company Logo"
+              style={{ height: "30px" }}
+            />
+            <span className="ml-1 font-extrabold inline-block text-base">
+              ORIZIC
+            </span>
+          </div>
           <div className="text-left">
             <p>(주)오리직 | 대표자: 김준수 | 사업자번호: 444-44-00612</p>
             <p>

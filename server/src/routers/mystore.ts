@@ -64,7 +64,6 @@ const uploadSubImage = async (req: Request, res: Response) => {
       );
       unlinkSync(fullFilename);
     }
-    console.log(user, "asd");
 
     return res.json(user);
   } catch (error) {

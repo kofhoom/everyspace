@@ -8,7 +8,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     // cokie처리
     const token = req.cookies.token;
     // userMiddleware에서 유저 정보 잘 가져오는지 체크
-    console.log("미들웨어: token", token);
     if (!token) return next();
 
     const { username }: any = jwt.verify(token, process.env.JWT_SECRET);

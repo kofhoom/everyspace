@@ -9,15 +9,13 @@ import { Tooltip, Divider } from "antd";
 import { CgUserList } from "react-icons/cg";
 // BiImage
 
-export default function SideBar({
-  sub,
-  ownSub,
-  setEdit,
-}: {
+interface ISideBarProps {
   sub: Sub;
   ownSub: boolean;
   setEdit: Dispatch<SetStateAction<boolean>>;
-}) {
+}
+
+export default function SideBar({ sub, ownSub, setEdit }: ISideBarProps) {
   const { user } = useAuthState();
   const [error, setError] = useState<any>({});
 
@@ -41,7 +39,7 @@ export default function SideBar({
       const result = await axios.put(`/auth/${userId}/request-approval`, {
         requesterUserId: user?.username,
       });
-      console.log(result);
+
       window.alert("가입 신청 되었습니다.");
     } catch (error: any) {
       console.log(error);

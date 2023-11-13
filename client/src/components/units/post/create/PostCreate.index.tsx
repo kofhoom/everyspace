@@ -13,100 +13,7 @@ import { Post } from "@/types";
 import RadioLayout from "@/src/components/commons/radio/01";
 import { Divider } from "antd";
 import useSwR from "swr";
-
-const ageData = [
-  { values: "선택" },
-  { values: "앰비언트" },
-  { values: "다크 앰비언트" },
-  { values: "뉴에이지 음악" },
-  { values: "베이스 음악" },
-  { values: "퓨처 베이스" },
-  { values: "일렉트로 하우스" },
-  { values: "브레이크비트" },
-  { values: "볼티모어 클럽" },
-  { values: "저지 클럽" },
-  { values: "빅 비트" },
-  { values: "칠아웃" },
-  { values: "다운템포" },
-  { values: "사이키델릭 트랜스" },
-  { values: "트립합" },
-  { values: "디스코" },
-  { values: "Hi-NRG" },
-  { values: "유로비트" },
-  { values: "유로댄스" },
-  { values: "이탈로 디스코" },
-  { values: "시티 팝" },
-  { values: "포스트디스코" },
-  { values: "드럼 앤 베이스" },
-  { values: "리퀴드 펑크" },
-  { values: "덥 음악" },
-  { values: "일렉트로닉 록" },
-  { values: "댄스록" },
-  { values: "댄스 펑크" },
-  { values: "일랙트로닉 팝" },
-  { values: "디스코 폴로" },
-  { values: "신스팝" },
-  { values: "디스코 폴로" },
-  { values: "일렉트로클래시" },
-  { values: "일렉트로팝" },
-  { values: "인디 록" },
-  { values: "크라우트록" },
-  { values: "뉴 웨이브" },
-  { values: "다크웨이브" },
-  { values: "뉴 로맨티시즘" },
-  { values: "포스트 록" },
-  { values: "스페이스 록" },
-  { values: "신스메탈" },
-  { values: "그라인드코어" },
-  { values: "일렉트로닉코어" },
-  { values: "일렉트로니카" },
-  { values: "그라인드코어" },
-  { values: "포크트로니카" },
-  { values: "프로그레시브" },
-  { values: "민속 일렉트로니카" },
-  { values: "쿠두루" },
-  { values: "실험 음악" },
-  { values: "포크트로니카" },
-  { values: "블랙 미디" },
-  { values: "일렉트로어쿠스틱" },
-  { values: "애시드 재즈" },
-  { values: "정글" },
-  { values: "하드코어 테크노" },
-  { values: "브레이크코어" },
-  { values: "디지털 하드코어" },
-  { values: "스피드코어" },
-  { values: "유령론" },
-  { values: "베이퍼웨이브" },
-  { values: "힙합" },
-  { values: "클라우드 랩" },
-  { values: "크렁크" },
-  { values: "이모 랩" },
-  { values: "멈블 랩" },
-  { values: "트랩" },
-  { values: "드릴" },
-  { values: "하우스" },
-  { values: "애시드 하우스" },
-  { values: "딥 하우스" },
-  { values: "프렌치 하우스" },
-  { values: "퓨처 하우스" },
-  { values: "UK 하드하우스" },
-  { values: "리듬 앤 블루스 및 솔 음악" },
-  { values: "컨템퍼러리 알앤비" },
-  { values: "네오 소울" },
-  { values: "뉴 잭 스윙" },
-  { values: "테크노" },
-  { values: "트랜스 음악" },
-  { values: "UK 개러지" },
-  { values: "투스텝" },
-  { values: "베이스라인" },
-  { values: "브레이크스텝" },
-  { values: "덥스텝" },
-  { values: "퓨처 개러지" },
-  { values: "그라임" },
-  { values: "UK 펑키" },
-  { values: "비디오 게임 음악" },
-  { values: "칩튠" },
-];
+import { catagoryData } from "@/src/commons/dummyData";
 
 // 폼 데이터의 인터페이스 정의
 interface FormData {
@@ -125,13 +32,10 @@ export default function PostCreateList({ isEdit }: IPostState) {
   const router = useRouter();
   const { identifier, slug } = router.query;
   // 포스트 리스트 가져오기
-  const {
-    data: post,
-    error,
-    mutate,
-  } = useSwR<Post>(identifier && slug ? `/posts/${identifier}/${slug}` : null);
+  const { data: post } = useSwR<Post>(
+    identifier && slug ? `/posts/${identifier}/${slug}` : null
+  );
 
-  console.log(post);
   useEffect(() => {
     // 데이터가 로드된 후 실행되는 코드
     if (post) {
@@ -157,6 +61,7 @@ export default function PostCreateList({ isEdit }: IPostState) {
     body: post?.body || "",
     sub: router.query.sub || "nomal",
   });
+
   const [imgUrl, setImgUrl] = useState<string>("");
   const [musicName, setMusicName] = useState<string>("");
   const [errors, setErrors] = useState<any>({});
@@ -169,7 +74,6 @@ export default function PostCreateList({ isEdit }: IPostState) {
     formData.priceChoose &&
     formData.musicType &&
     formData.body &&
-    imgUrl &&
     musicName
   );
 
@@ -188,8 +92,9 @@ export default function PostCreateList({ isEdit }: IPostState) {
   };
 
   // 파일 업로드
-  const uploadFile = async (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files === null) return;
+  const uploadFile = (event: ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) return; // 파일이 선택되지 않았을 경우
+
     const file = event.target.files[0];
 
     if (event.target.id === "cover") {
@@ -197,8 +102,10 @@ export default function PostCreateList({ isEdit }: IPostState) {
         window.alert("유효한 파일이 아닙니다.");
         return;
       }
-      const fileName = URL.createObjectURL(file);
-      setImgUrl(fileName);
+      if (file) {
+        const fileName = URL.createObjectURL(file);
+        setImgUrl(fileName);
+      }
     } else {
       if (file?.type === "image/png" || file?.type === "image/jpeg") {
         window.alert("유효한 파일이 아닙니다.");
@@ -252,6 +159,7 @@ export default function PostCreateList({ isEdit }: IPostState) {
             headers: { "Content-Type": "multipart/form-data" },
           }
         );
+
         if (isEdit) {
           // 포스트 데이터 수정 및 전송
           const { data: updatedPost } = await axios.put<Post>(
@@ -291,6 +199,7 @@ export default function PostCreateList({ isEdit }: IPostState) {
         multiple
         id="cover"
       />
+
       <input
         type="file"
         hidden={true}
@@ -298,6 +207,7 @@ export default function PostCreateList({ isEdit }: IPostState) {
         id="musicFile"
         onChange={uploadFile}
       />
+
       <div className="w-10/12 mx-auto md:w-96 p-4 bg-white  mb-2 border border-gray-200 rounded-lg shadow-md">
         <h1 className="text-2xl font-semibold">음원 등록</h1>
         <Divider className="mb-5 mt-3" />
@@ -309,9 +219,11 @@ export default function PostCreateList({ isEdit }: IPostState) {
                 <div
                   className="h-56 border border-gray-200 rounded-lg mb-2"
                   style={{
-                    backgroundImage: `url(${!imgUrl ? "" : imgUrl})`,
+                    backgroundImage: `url(${
+                      !imgUrl ? "/mainLogo.png" : imgUrl
+                    })`,
                     backgroundRepeat: "no-repeat",
-                    backgroundSize: "cover",
+                    backgroundSize: `${!imgUrl ? "contain" : "cover"}`,
                     backgroundPosition: "center",
                   }}
                 ></div>
@@ -410,7 +322,7 @@ export default function PostCreateList({ isEdit }: IPostState) {
                   setValue={(str: string) =>
                     setFormData((prevData) => ({ ...prevData, musicType: str }))
                   }
-                  option={ageData}
+                  option={catagoryData}
                   name="musicType"
                   error={errors.musicType}
                 />

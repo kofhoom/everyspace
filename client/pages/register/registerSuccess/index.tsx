@@ -1,4 +1,4 @@
-import RegisterSuccessList from "@/src/components/units/register/registerSuccess/RegisterSuccess.index";
+import RegisterSuccessList from "@/src/components/units/register/RegisterSuccess/RegisterSuccess.index";
 
 const RegisterSuccessPage = () => (
   <div

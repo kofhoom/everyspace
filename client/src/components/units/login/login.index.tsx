@@ -105,15 +105,39 @@ export default function LoginListPage() {
               로그인
             </button>
           </form>
-          {!isAdmin && (
-            <small>
-              아직 아이디가 없나요?
-              <Link href="/register" legacyBehavior>
-                {/* 회원가입 링크 */}
-                <a className="m-1 text-blue-500 uppercase">회원가입</a>
-              </Link>
-            </small>
-          )}{" "}
+          <div className="w-full flex justify-center mt-2">
+            <ul className="flex">
+              <li>
+                <small>
+                  {" "}
+                  <Link href="/passwordfind" legacyBehavior>
+                    <a className="uppercase hover:underline">비밀번호 찾기</a>
+                  </Link>
+                </small>
+              </li>
+              <li>
+                <Divider type="vertical" />
+              </li>
+              <li>
+                <small>
+                  {" "}
+                  <Link href="/idfind" legacyBehavior>
+                    <a className="uppercase hover:underline">아이디 찾기</a>
+                  </Link>
+                </small>
+              </li>
+              <li>
+                <Divider type="vertical" />
+              </li>
+              <li>
+                <small>
+                  <Link href="/register" legacyBehavior>
+                    <a className="uppercase hover:underline">회원가입</a>
+                  </Link>
+                </small>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

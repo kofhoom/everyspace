@@ -1,7 +1,11 @@
 import { Request, Response, Router } from "express";
 import { User } from "../entities/User";
 import { isEmpty, validate } from "class-validator";
-import { mapError, uploadImage } from "../utils/helpers";
+import {
+  generateTemporaryPassword,
+  mapError,
+  uploadImage,
+} from "../utils/helpers";
 import bcrypt from "bcryptjs"; // 비밀번호 암호화
 import jwt from "jsonwebtoken"; // 로그인 토큰
 import cookie from "cookie";
@@ -41,11 +45,10 @@ const uploadPostImage = async (req: Request, res: Response) => {
 
 // 회원가입
 const register = async (req: Request, res: Response) => {
-  const { email, username, password, imageUrn } = req.body;
+  const { email, username, password, imageUrn, tel } = req.body;
 
   try {
     let errors: any = {};
-    console.log(imageUrn);
     if (email.trim() === "") errors.email = "이메일을 입력해 주세요";
     // 이메일과 유저이름이 이미 저장 사용되고 있는 것인지 확인.
     const emailUser = await User.findOneBy({ email });
@@ -56,6 +59,7 @@ const register = async (req: Request, res: Response) => {
     if (emailUser) errors.email = "이미 해당 이메일 주소가 사용되었습니다.";
     if (usernameUser)
       errors.username = "이미 해당 사용자 이름이 사용되었습니다.";
+    if (tel.length !== 11) errors.tel = "전화번호는 11자리 이여야 합니다.";
 
     // 에러가 있다면 return으로 에러를 response 보내줌.
     if (Object.keys(errors).length > 0) {
@@ -66,10 +70,12 @@ const register = async (req: Request, res: Response) => {
     user.email = email;
     user.username = username;
     user.password = password;
+    user.tel = tel;
     user.userImageUrn = imageUrn;
     user.userBannerUrn = "";
     user.isApproved = false;
     user.approvalRequsts = [];
+
     // 엔티티에 정해 놓은 조건으로 user 데이터의 유효성 검사를 해줌.
     errors = await validate(user);
 
@@ -92,7 +98,7 @@ const login = async (req: Request, res: Response) => {
     let errors: any = {};
 
     //비워져 있다면 에러를 프론트엔드로 보내주기
-    if (isEmpty(username)) errors.username = "사용자 이름을 입력해주세요.";
+    if (isEmpty(username)) errors.username = "닉네임을 입력해주세요.";
     if (isEmpty(password)) errors.password = "비밀번호를 입력해주세요.";
     if (Object.keys(errors).length > 0) {
       return res.status(400).json(errors);
@@ -104,7 +110,7 @@ const login = async (req: Request, res: Response) => {
     if (!user)
       return res
         .status(404)
-        .json({ username: "사용자 이름이 등록되지 않았습니다." });
+        .json({ username: "닉네임이 등록되지 않았습니다." });
 
     // 유져가 있다면 비밀번호 비교하기
     const passwordMatches = await bcrypt.compare(password, user.password);
@@ -184,7 +190,6 @@ const requestApproval = async (req: Request, res: Response) => {
 // 승인 수락
 const approval = async (req: Request, res: Response) => {
   const username = req.params.userId;
-  console.log(username, "유저네임");
 
   try {
     const user: User = res.locals.user;
@@ -247,6 +252,149 @@ const reject = async (req: Request, res: Response) => {
   }
 };
 
+// 아이디 찾기
+const findUsername = async (req: Request, res: Response) => {
+  const { email, tel } = req.body;
+
+  try {
+    let errors: any = {};
+
+    //비워져 있다면 에러를 프론트엔드로 보내주기
+    if (isEmpty(email)) errors.email = "이메일을 입력해주세요.";
+    if (isEmpty(tel)) errors.tel = "전화번호를 입력해주세요.";
+
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).json(errors);
+    }
+    // 이메일로 사용자 찾기
+    const user = await User.findOneBy({ email });
+
+    if (!user) {
+      return res.status(404).json({ email: "사용자를 찾을 수 없습니다." });
+    }
+
+    const checkTel = await User.findOneBy({ tel });
+
+    if (!checkTel) {
+      return res.status(404).json({ tel: "전화번호가 맞지 않습니다." });
+    }
+    const username = user.username;
+
+    return res.json({ message: `사용자의 아이디는 ${username} 입니다.` });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+};
+
+// 비밀번호 찾기
+const findPassword = async (req: Request, res: Response) => {
+  const { email, username, tel } = req.body;
+
+  try {
+    let errors: any = {};
+
+    //비워져 있다면 에러를 프론트엔드로 보내주기
+    if (isEmpty(email)) errors.email = "이메일을 입력해주세요.";
+    if (isEmpty(username)) errors.username = "닉네임을 입력해주세요.";
+    if (isEmpty(tel)) errors.tel = "전화번호를 입력해주세요.";
+
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).json(errors);
+    }
+    // 이메일로 사용자 찾기
+    const user = await User.findOneBy({ email });
+
+    if (!user) {
+      return res.status(404).json({ email: "이메일을 찾을 수 없습니다." });
+    }
+
+    const nickName = await User.findOneBy({ username });
+
+    if (!nickName) {
+      return res.status(404).json({ username: "닉네임을 찾을 수 없습니다." });
+    }
+
+    const checkTel = await User.findOneBy({ tel });
+
+    if (!checkTel) {
+      return res.status(404).json({ tel: "전화번호가 맞지 않습니다." });
+    }
+
+    const temporaryPassword = generateTemporaryPassword();
+
+    // 새로운 비밀번호 해싱
+    const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
+
+    // 사용자의 비밀번호 업데이트
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.json({
+      message: temporaryPassword,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+};
+
+// 비밀번호 변경
+const passWordChange = async (req: Request, res: Response) => {
+  const { email, username, password, newPassword } = req.body;
+
+  try {
+    let errors: any = {};
+
+    //비워져 있다면 에러를 프론트엔드로 보내주기
+    if (isEmpty(email)) errors.email = "이메일을 입력해주세요.";
+    if (isEmpty(username)) errors.username = "닉네임을 입력해주세요.";
+    if (isEmpty(password)) errors.password = "비밀번호를 입력해주세요.";
+    if (isEmpty(newPassword))
+      errors.newPassword = "새로운 비밀번호를 입력해주세요.";
+
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).json(errors);
+    }
+    // 이메일로 사용자 찾기
+    const user = await User.findOneBy({ email });
+
+    if (!user) {
+      return res.status(404).json({ email: "이메일을 찾을 수 없습니다." });
+    }
+
+    const nickName = await User.findOneBy({ username });
+
+    if (!nickName) {
+      return res.status(404).json({ username: "닉네임을 찾을 수 없습니다." });
+    }
+
+    // 현재 비밀번호 일치 여부 확인
+    const isCurrentPasswordValid = await bcrypt.compare(
+      password,
+      user.password
+    );
+
+    if (!isCurrentPasswordValid) {
+      return res
+        .status(401)
+        .json({ password: "현재 비밀번호가 일치하지 않습니다." });
+    }
+
+    // 새로운 비밀번호 해싱
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // 사용자의 비밀번호 업데이트
+    user.password = hashedNewPassword;
+    await user.save();
+
+    return res.json({ message: "비밀번호가 성공적으로 변경되었습니다." });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+};
+
 const router = Router();
 router.get("/me", userMiddleware, authMiddleware, me);
 router.post("/upload", uploadImage.single("file"), uploadPostImage);
@@ -254,6 +402,9 @@ router.post("/register", register);
 router.post("/register/upload", register);
 router.post("/login", login);
 router.post("/logout", userMiddleware, authMiddleware, logout);
+router.post("/findId", findUsername);
+router.post("/findPassword", findPassword);
+router.post("/passwordChange", passWordChange);
 
 router.put("/:userId/request-approval", userMiddleware, requestApproval);
 router.put("/:userId/approve", userMiddleware, approval);

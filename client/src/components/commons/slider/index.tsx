@@ -10,11 +10,12 @@ const contentStyle: React.CSSProperties = {
 const CarouselList = () => (
   <Carousel>
     <div>
-      <div className="w-full relative" style={{ height: "500px" }}>
+      <div className="w-full relative sm:h-80">
         <img
           style={{ width: "100%", height: "100%" }}
           src="/main_background_img.jpg"
           alt="배경이미지"
+          className="sm:object-cover"
         />
         <div className="absolute top-0 text-center flex flex-col justify-center items-center w-full h-full">
           <h5 className="text-4xl text-white font-normal mb-3">
@@ -26,7 +27,7 @@ const CarouselList = () => (
           <p className="text-lg text-white">아티스트를 직접 지원하세요 .</p>
           <div className="cursor-pointer mt-6">
             <button className="w-32 px-2 h-12 text-center text-gray-400 font-normal border-gray-300 hover:border-blue-500 hover:text-blue-500 transition rounded-3xl border bg-white">
-              <Link href={`/create`} legacyBehavior>
+              <Link href={`/register`} legacyBehavior>
                 <a className="flex justify-center items-center w-full h-full text-lg  text-black">
                   무료가입
                 </a>
@@ -34,15 +35,6 @@ const CarouselList = () => (
             </button>
           </div>
         </div>
-      </div>
-    </div>
-    <div>
-      <div className="w-full" style={{ height: "500px" }}>
-        <img
-          style={{ width: "100%", height: "100%" }}
-          src="/main_background_img2.jpg"
-          alt="배경이미지2"
-        />
       </div>
     </div>
   </Carousel>

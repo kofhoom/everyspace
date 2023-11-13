@@ -10,7 +10,6 @@ export default function PostCreatePage() {
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   try {
     const cookie = req.headers.cookie;
-    console.log(cookie);
     // 쿠키가 없다면 에러를 보내기
     if (!cookie) throw Error("Missing auth token cookie");
 

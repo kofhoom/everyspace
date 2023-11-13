@@ -89,7 +89,6 @@ const getSerchDatas = async (req: Request, res: Response) => {
           }
         );
       } else {
-        console.log(searchData, "asdasd");
         queryBuilder.where(`entity.${searchType} LIKE :searchData`, {
           searchData: `%${searchData}%`,
         });
@@ -147,9 +146,15 @@ const getSearchPost = async (req: Request, res: Response) => {
   try {
     const post = await AppDataSource.getRepository(Post)
       .createQueryBuilder("entity")
-      .where("entity.title LIKE :searchData OR entity.body LIKE :searchData", {
-        searchData: `%${searchData}%`,
-      })
+      .leftJoinAndSelect("entity.sub", "sub")
+      .leftJoinAndSelect("entity.votes", "votes")
+      .leftJoinAndSelect("entity.comments", "comments")
+      .where(
+        "entity.title LIKE :searchData OR entity.body LIKE :searchData OR entity.musicType LIKE :searchData",
+        {
+          searchData: `%${searchData}%`,
+        }
+      )
       .getMany();
 
     if (!post) {

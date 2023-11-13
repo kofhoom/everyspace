@@ -1,17 +1,20 @@
-import { Column, Entity, JoinColumn, ManyToOne, Index } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import BaseEntity from "./Entity";
 import { User } from "./User";
 
 @Entity("payments")
 export default class Payment extends BaseEntity {
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, {
+    nullable: false,
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "buyer_name", referencedColumnName: "username" })
   user: User;
 
   @Column()
   buyer_name: string;
 
-  @Column()
+  @Column({ nullable: true })
   seller_name: string;
 
   @Column()
@@ -31,4 +34,7 @@ export default class Payment extends BaseEntity {
 
   @Column()
   success: boolean;
+
+  @Column({ nullable: true })
+  musicFileUrl: string;
 }

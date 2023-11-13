@@ -90,7 +90,6 @@ const topSubs = async (_: Request, res: Response) => {
       .orderBy(`"postCount"`, "DESC")
       .limit(12)
       .execute();
-    console.log(subs);
 
     return res.json(subs);
   } catch (error) {
@@ -121,12 +120,32 @@ const getSub = async (req: Request, res: Response) => {
   }
 };
 
-const getAllSubs = async (req: Request, res: Response) => {
+const getSubs = async (req: Request, res: Response) => {
+  const currentPage: number = (req.query.page || 0) as number;
+  const perPage: number = (req.query.count || 2) as number;
   try {
-    const sub = await Sub.find();
+    const sub = await Sub.find({
+      order: { createdAt: "DESC" },
+      relations: ["posts"],
+      skip: currentPage * perPage,
+      take: perPage,
+    });
 
     // 포스트를 생성한 후에 해당 sub에 속하는 포스트 정보들을 넣어주기
-    console.log(sub);
+    return res.json(sub);
+  } catch (error: any) {
+    return res.status(404).json({ error: "서브를 찾을수 없음니다" });
+  }
+};
+
+const getAllSubs = async (req: Request, res: Response) => {
+  try {
+    const sub = await Sub.find({
+      order: { createdAt: "DESC" },
+      relations: ["posts"],
+    });
+
+    // 포스트를 생성한 후에 해당 sub에 속하는 포스트 정보들을 넣어주기
     return res.json(sub);
   } catch (error: any) {
     return res.status(404).json({ error: "서브를 찾을수 없음니다" });
@@ -136,7 +155,6 @@ const getAllSubs = async (req: Request, res: Response) => {
 // 커뮤니티 소유 여부
 const ownSub = async (req: Request, res: Response, next: NextFunction) => {
   const user: User = res.locals.user;
-  console.log();
   try {
     const sub = await Sub.findOneOrFail({ where: { name: req.params.name } });
     if (sub.username !== user.username) {
@@ -218,6 +236,7 @@ const uploadSubImage = async (req: Request, res: Response) => {
 const router = Router();
 
 router.get("/", getAllSubs);
+router.get("/getSubs", getSubs);
 router.get("/:name", userMiddleware, getSub);
 router.post("/:name/delete", userMiddleware, deleteSub);
 router.post("/new", userMiddleware, authMiddleware, createBoard);

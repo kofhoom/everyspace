@@ -1,12 +1,12 @@
-import BoardCommunityList from "@/src/components/units/communityList/BoardCommunityList.index";
-import PostCardList from "@/src/components/units/post/cardList/PostCardList.index";
-import { Post, User } from "@/types";
+import { Post } from "@/types";
 import useSWRInfinite from "swr/infinite";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import axios from "axios";
 import { Divider, Empty } from "antd";
+import PostCardList from "@/src/components/units/post/cardList/PostCardList.index";
+import CommunitySideBarList from "@/src/components/units/community/sideBar/CommunitySideBarList.index";
 
 export default function Home() {
   const getKey = (pageIndex: number, previousPageData: Post[]) => {
@@ -18,7 +18,6 @@ export default function Home() {
     error,
     size: page,
     setSize: setPage,
-    isValidating,
     mutate,
   } = useSWRInfinite<Post[]>(getKey);
 
@@ -39,6 +38,7 @@ export default function Home() {
       setObservedPost(id);
       observeElement(document.getElementById(id));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [posts]);
 
   const observeElement = (el: HTMLElement | null) => {
@@ -97,7 +97,7 @@ export default function Home() {
         </div>
       </div>
       {/* 커뮤니티 리스트 */}
-      {authRoute && <BoardCommunityList />}
+      {authRoute && <CommunitySideBarList />}
     </main>
   );
 }
@@ -106,7 +106,6 @@ export default function Home() {
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   try {
     const cookie = req.headers.cookie;
-    console.log(cookie);
     // 쿠키가 없다면 에러를 보내기
     if (!cookie) throw Error("Missing auth token cookie");
 

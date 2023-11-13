@@ -11,6 +11,7 @@ import userRoutes from "./routers/users";
 import paymentRoutes from "./routers/payments";
 import myStoreRoutes from "./routers/mystore";
 import searchRoutes from "./routers/search";
+import downloadRoutes from "./routers/download";
 
 import cors from "cors";
 import dotenv from "dotenv";
@@ -40,6 +41,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/mystore", myStoreRoutes);
 app.use("/api/search", searchRoutes);
+app.use("/api/download", downloadRoutes);
 
 app.use(express.static("public")); // 브라우저로 접근 할때 정적파일 제공 허용
 let port = 4000;
