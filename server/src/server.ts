@@ -18,7 +18,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
 const app = express();
-const origin = "http://localhost:3000";
+const origin = process.env.ORIGIN;
 
 app.use(
   cors({
@@ -47,7 +47,7 @@ app.use(express.static("public")); // 브라우저로 접근 할때 정적파일
 let port = 4000;
 
 app.listen(port, async () => {
-  console.log(`${port}연결성공`);
+  console.log(`${process.env.ORIGIN}연결성공`);
 
   AppDataSource.initialize()
     .then(() => {

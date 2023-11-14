@@ -8,7 +8,7 @@ import useSwR from "swr";
 export default function CommunityContentList() {
   const { authenticated, user } = useAuthState();
   const router = useRouter();
-  const address = "http://localhost:4000/api/boards/sub/topSubs";
+  const address = "/boards/sub/topSubs";
 
   const { data: topSubs } = useSwR<Sub[]>(address);
 

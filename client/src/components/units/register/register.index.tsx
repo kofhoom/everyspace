@@ -3,6 +3,7 @@ import InputGroup from "../../commons/inputs/01";
 import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { useAuthState } from "@/src/context/auth";
 import { Divider } from "antd";
 
 // 폼 데이터의 인터페이스 정의
