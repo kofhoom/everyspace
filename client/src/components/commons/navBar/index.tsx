@@ -105,7 +105,6 @@ export default function NaveBar() {
                   로그인
                 </a>
               </Link>
-
               <Link href={`/register`} legacyBehavior>
                 <a className="flex justify-center items-center w-full h-full text-xs hover:underline cursor-pointer transition">
                   회원가입
@@ -114,7 +113,7 @@ export default function NaveBar() {
             </div>
           ))}
       </div>
-      <div>
+      <div className="hidden ms:block">
         <MobileNavBarList
           loading={loading}
           authenticated={authenticated}

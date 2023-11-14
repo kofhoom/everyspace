@@ -242,10 +242,10 @@ export default function Home() {
       {/* 마지막 섹션 */}
       <section className="w-full h-96 flex justify-center items-center flex-col">
         <div className="w-full text-center">
-          <p className="text-4xl mb-2 sm:text-2xl">
+          <p className="text-4xl mb-2 sm:text-2xl break-keep">
             들어 주셔서 감사합니다. 이제 참여하세요.
           </p>
-          <p className="sm:text-sm">
+          <p className="sm:text-sm break-keep">
             트랙을 확인하고, 아티스트를 서포트하고, 원하는 음악을 가지세요.
           </p>
         </div>

@@ -47,7 +47,7 @@ export default function SideBar({ sub, ownSub, setEdit }: ISideBarProps) {
     }
   };
   return (
-    <div className="hidden w-4/12 ml-3 md:block">
+    <div className="w-4/12 ml-3 ms:w-full ms:ml-0">
       <div className="bg-white border rounded-lg shadow-md">
         <div className="p-3 bg-black rounded-t">
           <p className="font-semibold text-white">{sub?.name}</p>

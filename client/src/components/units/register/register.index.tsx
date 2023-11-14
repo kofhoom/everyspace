@@ -3,7 +3,6 @@ import InputGroup from "../../commons/inputs/01";
 import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useAuthState } from "@/src/context/auth";
 import { Divider } from "antd";
 
 // 폼 데이터의 인터페이스 정의
@@ -130,7 +129,7 @@ export default function RegisterList() {
         onChange={uploadImage}
       />
       <div className="flex items-center p-6">
-        <div className="w-10/12 mx-auto md:w-96 border border-gray-200 p-4 rounded-lg shadow-md">
+        <div className="mx-auto w-96 border sm:w-full border-gray-200 p-4 rounded-lg shadow-md">
           <h1 className="text-2xl font-bold">회원가입</h1>
           <Divider className="mb-5 mt-3" />
           <form onSubmit={handleSubmit}>

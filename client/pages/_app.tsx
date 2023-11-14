@@ -43,7 +43,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <RecoilRoot>
           <AuthProvider>
             {authRoute ? "" : <NaveBar />}
-            <div className={!authRoute ? "pt-12 min-h-screen" : " "}>
+            <div className={!authRoute ? "pt-55" : ""} style={{}}>
               <Component {...pageProps} />
               <FooterLayout />
             </div>

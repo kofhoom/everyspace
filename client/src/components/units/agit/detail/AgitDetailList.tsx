@@ -154,13 +154,13 @@ export default function AgitDetailList() {
             </div>
           </div>
           {/* 포스트 & 사이드바 */}
-          <div className="flex max-w-5xl px-4 pt-5 mx-auto">
+          <div className="flex max-w-5xl px-4 pt-5 mx-auto ms:flex-col">
             {!edit ? (
-              <div className="w-full md:mr-3 md:w-8/12 border section-layout shadow-md">
+              <div className="w-full w-9/12 border section-layout shadow-md ms:order-2 ms:w-full ms:mt-3">
                 {renderPosts}
               </div>
             ) : (
-              <div className="w-full md:mr-3 md:w-8/12 section-layout border shadow-md">
+              <div className="w-full w-3/12 section-layout border shadow-md ms:order-2 ms:w-full ms:mt-3">
                 <div className="w-full px-4">
                   <h2 className="main-section-title flex items-center justify-between">
                     아지트 편집{" "}

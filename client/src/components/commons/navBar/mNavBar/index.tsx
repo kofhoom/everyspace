@@ -19,12 +19,8 @@ export default function MobileNavBarList({
 }: IMobileNavProps) {
   const [open, setOpen] = useState(false);
 
-  const showDrawer = () => {
-    setOpen(true);
-  };
-
-  const onClose = () => {
-    setOpen(false);
+  const handelDrawer = () => {
+    setOpen((prev) => !prev);
   };
 
   return (
@@ -32,11 +28,11 @@ export default function MobileNavBarList({
       <Button
         type="primary"
         icon={<MenuOutlined />}
-        onClick={showDrawer}
+        onClick={handelDrawer}
       ></Button>
       <Drawer
         placement="right"
-        onClose={onClose}
+        onClose={handelDrawer}
         open={open}
         extra={
           <>
@@ -62,11 +58,13 @@ export default function MobileNavBarList({
                       </p>
                     </div>
                     <div className="flex items-center w-36 ml-auto">
-                      <Link href={`/u/${user!.username}`} legacyBehavior>
-                        <a className="flex justify-center items-center w-full h-full text-xs mr-1 hover:underline cursor-pointer transition">
-                          마이 페이지
-                        </a>
-                      </Link>
+                      <div onClick={handelDrawer} className="w-full">
+                        <Link href={`/u/${user!.username}`} legacyBehavior>
+                          <a className="flex justify-center items-center w-full h-full text-xs mr-1 hover:underline cursor-pointer transition">
+                            마이 페이지
+                          </a>
+                        </Link>
+                      </div>
                       <Divider type="vertical" />
                       <div
                         className="flex justify-center items-center w-full h-full text-xs hover:underline cursor-pointer transition"
@@ -77,7 +75,10 @@ export default function MobileNavBarList({
                     </div>
                   </>
                 ) : (
-                  <div className="flex items-center w-28">
+                  <div
+                    className="flex items-center w-28"
+                    onClick={handelDrawer}
+                  >
                     <Link href={`/login`} legacyBehavior>
                       <a className="flex justify-center items-center w-full h-full text-xs hover:underline cursor-pointer transition">
                         로그인
@@ -97,21 +98,27 @@ export default function MobileNavBarList({
       >
         <div className="mr-auto">
           <ul className="flex flex-col">
-            <li className="text-sm transition hover:font-semibold cursor-pointer">
+            <li
+              className="text-sm transition hover:font-semibold cursor-pointer"
+              onClick={handelDrawer}
+            >
               <Link href={`/mystore/${user?.username}`} legacyBehavior>
-                <a className="text-lg">나의 상점</a>
+                <a className="text-lg w-full inline-block">나의 상점</a>
               </Link>
             </li>
             <li>
               <Divider className="" />
             </li>
-            <li className="text-sm transition hover:font-semibold cursor-pointer">
+            <li
+              className="text-sm transition hover:font-semibold cursor-pointer"
+              onClick={handelDrawer}
+            >
               <Link href={`/community`} legacyBehavior>
-                <a className="text-lg">아지트</a>
+                <a className="text-lg w-full inline-block">아지트</a>
               </Link>
             </li>
             <li>
-              <Divider className="" />
+              <Divider />
             </li>
           </ul>
         </div>

@@ -63,9 +63,9 @@ export default function Home() {
   const authRoutes = ["/community"];
   const authRoute = authRoutes.includes(pathname);
   return (
-    <main className="flex max-w-6xl px-4 mx-auto pt-5">
+    <main className="flex max-w-6xl px-4 mx-auto pt-5 ms:flex-col">
       {/* 포스트 리스트 */}
-      <div className="w-full section-layout border shadow-md">
+      <div className="w-full section-layout border shadow-md ms:order-2">
         <div className="w-full">
           <h2 className="main-section-title ">아지트 전체글 </h2>
           <Divider className="mb-5 mt-2" />

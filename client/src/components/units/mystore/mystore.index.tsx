@@ -127,7 +127,7 @@ export default function MyStoreList() {
           <div className="bg-transparent flex items-center border-t border-b mb-3 w-fit">
             <div className="w-full relative flex max-w-5xl px-5 mx-auto">
               <div
-                className={`relative mystore-profile h-44 w-44 rounded-full ${
+                className={`relative mystore-profile sm:h-24 sm:w-24 h-44 w-44 rounded-full ${
                   ownSub ? "cursor-pointer" : ""
                 }`}
                 style={{ top: 0 }}

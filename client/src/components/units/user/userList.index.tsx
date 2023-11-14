@@ -206,19 +206,20 @@ export default function UserList() {
                 </div>
               </>
             )}
-            {data.userData.map((data: any) => {
-              if (data.type === "Post") {
-                const post: Post = data;
-                if (post) {
-                  return (
-                    <>
-                      <div>{data.type}</div>
-                      <PostCardList key={post.identifier} post={post} />
-                    </>
-                  );
+            <div className="layout2 md:flex md:flex-col">
+              {data.userData.map((data: any) => {
+                if (data.type === "Post") {
+                  const post: Post = data;
+                  if (post) {
+                    return (
+                      <>
+                        <PostCardList key={post.identifier} post={post} />
+                      </>
+                    );
+                  }
                 }
-              }
-            })}
+              })}
+            </div>
           </div>
         </div>
       ),
@@ -344,7 +345,7 @@ export default function UserList() {
         defaultActiveKey="1"
         items={items}
         className="w-full md:mr-3"
-        tabPosition={"left"}
+        tabPosition={"top"}
         type="card"
       />
     </div>

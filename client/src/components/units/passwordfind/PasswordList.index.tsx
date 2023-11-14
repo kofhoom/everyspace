@@ -45,9 +45,9 @@ export default function PasswordList() {
   };
 
   return (
-    <div className="w-full">
-      <div className="flex flex-col items-center justify-center h-screen p-6">
-        <div className="mx-auto md:w-96">
+    <div className="w-full content-height flex justify-center">
+      <div className="flex flex-col items-center justify-center p-6 w-full">
+        <div className="mx-auto w-96 sm:w-full">
           <h1 className="text-2xl font-bold">비밀번호 찾기</h1>
           <Divider className="mb-5 mt-3" />
           {/* 비밀번호 찾기 결과 */}

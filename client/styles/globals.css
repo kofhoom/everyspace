@@ -260,12 +260,14 @@ img {
   height: fit-content;
   display: inline-block;
 }
+
 .ant-segmented-item,
 .ant-segmented-item-label {
   width: 100%;
   text-align: left;
   overflow: initial !important;
 }
+
 .ant-segmented-thumb {
   display: none;
 }
@@ -283,4 +285,12 @@ img {
 .px-0 {
   padding-left: 0 !important;
   padding-right: 0 !important;
+}
+
+.content-height {
+  height: calc(100vh - 244px);
+}
+
+.pt-55 {
+  padding-top: 55px;
 }
