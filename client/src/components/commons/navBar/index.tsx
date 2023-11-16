@@ -107,7 +107,7 @@ export default function NaveBar() {
               </Link>
               <Link href={`/register`} legacyBehavior>
                 <a className="flex justify-center items-center w-full h-full text-xs hover:underline cursor-pointer transition">
-                  회원가입
+                  회원가입.
                 </a>
               </Link>
             </div>
