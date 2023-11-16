@@ -11,6 +11,7 @@ import { useRecoilState } from "recoil";
 import { selectedNavState } from "@/src/commons/recoil";
 import { useAuthDispatch, useAuthState } from "@/src/context/auth";
 import axios from "axios";
+import Link from "next/link";
 
 const { Header } = Layout;
 
@@ -48,7 +49,9 @@ const AdminNavbar = () => {
       }}
     >
       <div className="logo px-3 flex justify-between">
-        <a href="/admin">My Admin</a>
+        <Link href={`/admin`} legacyBehavior>
+          <a>My Admin</a>
+        </Link>
         <div className="flex items-center">
           <p className="text-xs mr-3">
             <b>{user?.username}</b>님 환영합니다.
@@ -59,7 +62,9 @@ const AdminNavbar = () => {
           >
             로그아웃
           </span>
-          <a href="/">홈페이지</a>
+          <Link href={`/`} legacyBehavior>
+            <a href="/">홈페이지</a>
+          </Link>
         </div>
       </div>
       <Menu
