@@ -14,4 +14,4 @@ ENV NODE_ENV production
 
 RUN npm run build:prod
 
-CMD ["yarn","run","start:prod"]
+CMD ["npm","yarn","run","start:prod"]
