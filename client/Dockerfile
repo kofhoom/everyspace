@@ -12,6 +12,6 @@ COPY ./ ./
 
 ENV NODE_ENV production
 
-RUN yarn build:prod
+RUN npm run build:prod
 
-CMD ["yarn", "start:prod"]
+CMD ["yarn","run","start:prod"]
