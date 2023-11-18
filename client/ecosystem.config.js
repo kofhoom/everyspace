@@ -3,6 +3,7 @@ module.exports = {
     {
       name: "orizic",
       script: "npm run start:prod",
+      instances: 1,
     },
   ],
 };

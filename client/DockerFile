@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN yarn install
+RUN npm install
 
 COPY ./ ./
 
@@ -14,4 +14,4 @@ ENV NODE_ENV production
 
 RUN npm run build:prod
 
-CMD ["npm","yarn","run","start:prod"]
+CMD ["npm", "run", "start:prod"]

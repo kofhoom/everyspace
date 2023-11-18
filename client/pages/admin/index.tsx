@@ -11,7 +11,7 @@ import { useRecoilValue } from "recoil";
 
 const { Sider, Content } = Layout;
 
-function App() {
+export default function AdminMainPage() {
   const selectedNav = useRecoilValue(selectedNavState);
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -27,8 +27,6 @@ function App() {
     </Layout>
   );
 }
-
-export default App;
 
 // 인증에 따른 제한
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
