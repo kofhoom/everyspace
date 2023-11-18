@@ -50,7 +50,7 @@ const AdminNavbar = () => {
     >
       <div className="logo px-3 flex justify-between">
         <Link href={`/admin`} legacyBehavior>
-          <a>My Admin</a>
+          My Admin
         </Link>
         <div className="flex items-center">
           <p className="text-xs mr-3">
@@ -63,7 +63,7 @@ const AdminNavbar = () => {
             로그아웃
           </span>
           <Link href={`/`} legacyBehavior>
-            <a href="/">홈페이지</a>
+            홈페이지
           </Link>
         </div>
       </div>

@@ -26,6 +26,7 @@
   "name": "server",
   "version": "1.0.0",
   "main": "server.ts",
+  "type": "module",
   "devDependencies": {
     "@types/cookie": "^0.5.2",
     "@types/cookie-parser": "^1.4.4",
