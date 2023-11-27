@@ -17,7 +17,7 @@ const { Meta } = Card;
 export default function AgitList(props: { data: Sub }) {
   const router = useRouter();
   const moveToPage = () => {
-    router.push(`/r/${props.data.title}`);
+    router.push(`/r/${props.data.name}`);
   };
 
   return (

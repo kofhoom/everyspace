@@ -1,12 +1,12 @@
 import multer, { FileFilterCallback } from "multer";
 import path from "path";
 
-// 언더바 생성 제너레이터
-export const slugify = function (str) {
+// 주어진 문자열에서 슬러그를 생성하는 함수
+export const slugify = function (str: string): string {
   str = str.replace(/^\s+|\s+$/g, ""); // trim
   str = str.toLowerCase();
 
-  // remove accents, swap ñ for n, etc
+  // 강세 기호 제거, ñ을 n으로 교체 등
   var from = "ãàáäâẽèéëêìíïîõòóöôùúüûñç·/_,:;";
   var to = "aaaaaeeeeeiiiiooooouuuunc------";
   for (var i = 0, l = from.length; i < l; i++) {
@@ -14,15 +14,15 @@ export const slugify = function (str) {
   }
 
   str = str
-    .replace(/[^a-z0-9 -]/g, "") // remove invalid chars
-    .replace(/\s+/g, "-") // collapse whitespace and replace by -
-    .replace(/-+/g, "-"); // collapse dashes
+    .replace(/[^a-z0-9 -]/g, "") // 유효하지 않은 문자 제거
+    .replace(/\s+/g, "-") // 공백 축소 및 -로 교체
+    .replace(/-+/g, "-"); // 대시 축소
 
   return str;
 };
 
-// 임의 문자 생성 제너레이터
-export function makeId(length) {
+// 특정 길이의 무작위 ID를 생성하는 함수
+export function makeId(length: number): string {
   var result = "";
   var characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -34,7 +34,8 @@ export function makeId(length) {
 }
 
 // 에러 형식 맵핑
-export const mapError = (errors: Object[]) => {
+// 유효성 검사 오류를 더 읽기 쉬운 형식으로 매핑하는 함수
+export const mapError = (errors: Object[]): Object[] => {
   return errors.reduce((prev: any, err: any) => {
     prev[err.property] = Object.entries(err.constraints)[0][1];
     return prev;
@@ -42,6 +43,7 @@ export const mapError = (errors: Object[]) => {
 };
 
 // 이미지 저장
+// 이미지 업로드를 위한 multer 미들웨어 구성
 export const uploadImage = multer({
   storage: multer.diskStorage({
     destination: "public/images",
@@ -60,6 +62,7 @@ export const uploadImage = multer({
 });
 
 // 음악 저장
+// 음악 파일 업로드를 위한 multer 미들웨어 구성
 export const uploadMusic = multer({
   storage: multer.diskStorage({
     destination: "public/music",
@@ -76,6 +79,8 @@ export const uploadMusic = multer({
     }
   },
 });
+
+// 현재 날짜와 주어진 타임스탬프 간의 시간 차이를 계산하는 함수
 export function timeForToday(value: string) {
   const today = new Date();
   const timeValue = new Date(value);
@@ -101,9 +106,8 @@ export function timeForToday(value: string) {
   return `${Math.floor(betweenTimeDay / 365)}년전`;
 }
 
-// 임시 비밀번호 생성 함수
+// 임시 비밀번호를 생성하는 함수
 export const generateTemporaryPassword = () => {
-  // 원하는 방식으로 임시 비밀번호 생성
-  // 예: Math.random()을 사용하여 무작위 문자열 생성
+  // Math.random()을 사용하여 임시 비밀번호 생성
   return Math.random().toString(36).substring(7);
 };

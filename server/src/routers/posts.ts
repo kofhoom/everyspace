@@ -198,6 +198,7 @@ const getAllPost = async (req: Request, res: Response) => {
   try {
     const post = await Post.find({
       order: { createdAt: "DESC" },
+      relations: ["sub", "votes", "comments", "user"],
     });
 
     return res.send(post);

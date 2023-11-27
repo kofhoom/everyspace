@@ -24,6 +24,7 @@ export default function SearchBar({
 }: ISeachProps) {
   return (
     <div className="flex flex-col w-full">
+      {/* 검색 입력 부분 */}
       <div className="max-w-full flex mt-11">
         <div
           className={`relative flex items-center bg-gray-100 border rounded hover:border-gray-700 hover:bg-white ${
@@ -45,6 +46,7 @@ export default function SearchBar({
             onClick={handleSearch}
           />
         </div>
+        {/* 관리자용 선택 그룹 */}
         {type == "admin" && (
           <>
             <SelectGroup
@@ -57,6 +59,7 @@ export default function SearchBar({
           </>
         )}
       </div>
+      {/* 구분선 */}
       <Divider className="mb-5" />
     </div>
   );

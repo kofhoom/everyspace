@@ -128,7 +128,8 @@ const login = async (req: Request, res: Response) => {
       "Set-Cookie",
       cookie.serialize("token", token, {
         httpOnly: true, // 자바스크립트 에서 쿠키를 사용할 수 없게 설정
-        secure: process.env.NODE_ENV === "production", //https 연결에서 쿠키를 사용 할 수 있게 설정
+        secure: false, //https 연결에서 쿠키를 사용 할 수 있게 설정
+        // secure: process.env.NODE_ENV === "production", //https 연결에서 쿠키를 사용 할 수 있게 설정
         sameSite: "strict", // 외부 사이트에서 요청시 브라우자가 쿠리를 보내지 못하도록 막아줌 (xsrf공격 방어)
         maxAge: 60 * 60 * 24 * 7, // 쿠키 저장시간 1week
         path: "/",
@@ -147,7 +148,8 @@ const logout = async (_: Request, res: Response) => {
     "Set-Cookie",
     cookie.serialize("token", "", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      // secure: process.env.NODE_ENV === "production", //https
+      secure: false,
       sameSite: "strict",
       expires: new Date(0),
       path: "/",
@@ -224,7 +226,7 @@ const approval = async (req: Request, res: Response) => {
 
 // 승인거절 요청 처리 엔드포인트
 const reject = async (req: Request, res: Response) => {
-  const currentUsername = req.params.id;
+  const currentUsername = req.params.userId;
 
   try {
     const user: User = res.locals.user;
@@ -321,6 +323,7 @@ const findPassword = async (req: Request, res: Response) => {
       return res.status(404).json({ tel: "전화번호가 맞지 않습니다." });
     }
 
+    // 임시 비밀번호 생성
     const temporaryPassword = generateTemporaryPassword();
 
     // 새로운 비밀번호 해싱

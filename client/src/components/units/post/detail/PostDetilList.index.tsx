@@ -2,23 +2,23 @@ declare const window: typeof globalThis & {
   IMP: any;
 };
 
-import { Button, Space, Dropdown, type MenuProps, Divider, Tag } from "antd";
-import { useRouter } from "next/router";
-import { useAuthState } from "@/src/context/auth";
 import useSwR from "swr";
-import { Post, User } from "@/types";
-import { Comment } from "@/types";
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { Button, Space, Dropdown, type MenuProps, Divider, Tag } from "antd";
+import { useRouter } from "next/router";
+import { useAuthState } from "@/src/context/auth";
+import { Post, User } from "@/types";
+import { Comment } from "@/types";
 import { FormEvent, useState } from "react";
 import AudioLayout from "@/src/components/commons/audio";
 import { FaHotjar } from "react-icons/fa";
 import { FaRegCopy } from "react-icons/fa";
 import type { SizeType } from "antd/es/config-provider/SizeContext";
-import { handleCopyClipBoard } from "@/utils/helpers";
 import Image from "next/image";
 import { DeleteOutlined } from "@ant-design/icons";
+import CopyToClipboardButton from "@/src/components/commons/button/copyButton";
 
 export default function PostDetailList() {
   const { data: users, error: getUserError } = useSwR(`/users/`);
@@ -27,6 +27,14 @@ export default function PostDetailList() {
   const { authenticated, user } = useAuthState();
   const [newComment, setNewComment] = useState("");
   const [size, setSize] = useState<SizeType>("small"); // default is 'middle'
+
+  // 현재 페이지의 URL 가져오기
+  const currentUrl = typeof window !== "undefined" ? window.location.href : "";
+
+  // 복사 성공 시 처리
+  const handleCopy = () => {
+    alert("URL이 복사되었습니다: " + currentUrl);
+  };
 
   // 포스트 삭제
   const handlePostDelete = async () => {
@@ -348,7 +356,7 @@ export default function PostDetailList() {
                       >
                         좋아요 {post.voteScore}
                       </Button>
-                      <Button
+                      {/* <Button
                         block
                         type="primary"
                         icon={<FaRegCopy />}
@@ -358,7 +366,17 @@ export default function PostDetailList() {
                         )}
                       >
                         링크 공유
-                      </Button>
+                      </Button> */}
+
+                      {/* 링크 공유 버튼 */}
+                      <CopyToClipboardButton
+                        text={currentUrl}
+                        onCopy={handleCopy}
+                        icon={FaRegCopy}
+                        classNames="py-0.5 px-2 rounded-md"
+                      >
+                        링크 공유
+                      </CopyToClipboardButton>
                       {isOwnUser && (
                         <Dropdown.Button
                           type="primary"
@@ -453,19 +471,6 @@ export default function PostDetailList() {
                               "YYYY-MM-DD HH:mm"
                             )}`}
                           </span>
-                          {/* <div
-                            className="ml-2 flex item-center w-6 mx-auto text-gray-400 rounded cursor-pointer hover:bg-gray-300 hover:text-red-500"
-                            onClick={() => vote(1, comment)}
-                          >
-                            {comment.userVote === 1 ? (
-                              <FaHotjar className="mx-auto text-red-500" />
-                            ) : (
-                              <FaHotjar />
-                            )}
-                            <p className="ml-1 text-xs font-bold">
-                              {comment.voteScore}
-                            </p>
-                          </div> */}
                         </div>
                         <p>{comment.body}</p>
                       </div>

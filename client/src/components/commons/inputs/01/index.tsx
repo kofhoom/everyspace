@@ -1,6 +1,7 @@
 import cls from "classnames";
 import { ChangeEvent } from "react";
 
+// InputGroup 컴포넌트 정의
 interface IInputGroupProps {
   className?: string;
   type?: string;
@@ -14,6 +15,7 @@ interface IInputGroupProps {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
+// InputGroup 함수 컴포넌트 정의
 export default function InputGroup({
   className = "w-full mb-4",
   type = "text",
@@ -27,6 +29,7 @@ export default function InputGroup({
 }: IInputGroupProps) {
   return (
     <div className={className}>
+      {/* 입력 필드 */}
       <input
         disabled={disabled}
         type={type}
@@ -47,6 +50,7 @@ export default function InputGroup({
         value={value}
         maxLength={maxLength}
       />
+      {/* 에러 또는 안내 메시지 */}
       <small
         className={`font-medium ${
           error === "비밀번호가 일치 합니다." ? "text-blue-500" : "text-red-500"

@@ -3,6 +3,7 @@ import { useState } from "react";
 import AdminDetailsList from "../../admin/commons/content/details/admin.detailsList.index";
 
 interface Itabels {
+  // 컬럼 및 데이터 정보, 제목, 타입을 받아옴
   columns: any[];
   data: any[] | undefined;
   title?: string;
@@ -18,10 +19,12 @@ const BasicTable = ({ columns, data, title, type }: Itabels): JSX.Element => {
     setPage(newPage);
   };
 
+  // 현재 페이지 데이터 계산
   const start = (page - 1) * pageSize;
   const end = start + pageSize;
   const currentData = data?.slice(start, end);
 
+  // 확장 행 처리 함수
   const handleExpand = (expanded: any, record: any) => {
     let key = (record.key = record.id);
 
@@ -36,6 +39,7 @@ const BasicTable = ({ columns, data, title, type }: Itabels): JSX.Element => {
   return (
     <>
       {type !== "user" ? (
+        // 테이블 컴포넌트 렌더링
         <Table
           columns={columns}
           dataSource={currentData}
@@ -46,6 +50,7 @@ const BasicTable = ({ columns, data, title, type }: Itabels): JSX.Element => {
               expandedRowKeys.includes(record.key) && (
                 <>
                   <Divider className="mb-5" />
+                  {/* 세부 정보 리스트를 표시하는 컴포넌트 */}
                   <AdminDetailsList title={title} data={data?.[index]} />
                 </>
               ),
@@ -54,6 +59,7 @@ const BasicTable = ({ columns, data, title, type }: Itabels): JSX.Element => {
           }}
         />
       ) : (
+        // 유저 타입일 경우 페이지네이션 없이 테이블 렌더링
         <Table columns={columns} dataSource={currentData} pagination={false} />
       )}
 

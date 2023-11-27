@@ -48,15 +48,19 @@ export default function PostCardList({
   const router = useRouter();
 
   const isInSubPage = router.pathname === "/r/[sub]"; // 분기처리
+
+  // 댓글에 대한 좋아요 및 싫어요 투표 함수
   const vote = async (value: number) => {
     if (!authenticated) router.push("/login");
     if (value === userVote) value = 0;
     try {
+      // 투표 API 호출
       await axios.post("/votes", {
         identifier,
         slug,
         value,
       });
+      // 데이터 갱신
       if (mutate) {
         mutate();
       }
@@ -68,6 +72,7 @@ export default function PostCardList({
     }
   };
 
+  // 사용자 정보 요청
   const { data: users, error: getUserError } = useSwR(`/users/`);
 
   return (
@@ -85,6 +90,7 @@ export default function PostCardList({
           <div className="w-full flex items-center mb-4 pb-3">
             <div className="w-full flex items-center border-b border-b-#e5e7eb pb-3  justify-between">
               <div className="flex items-center">
+                {/* 작성자 프로필 이미지 */}
                 <Link href={`/r/${subName}`} legacyBehavior>
                   <a className="flex justify-center items-center w-10 h-10 border border-gray-300 rounded-full overflow-hidden mr-1">
                     {users?.map(
@@ -102,6 +108,7 @@ export default function PostCardList({
                     )}
                   </a>
                 </Link>
+                {/* 작성자 이름 */}
                 <p className="text-xs text-black-400">
                   <Link href={`/mystore/${username}`} legacyBehavior>
                     <a className="mx-1 font-bold hover:underline">{username}</a>
@@ -112,6 +119,7 @@ export default function PostCardList({
               <div className="flex items-center">
                 {!isInSubPage && subName !== null && (
                   <>
+                    {/* 아지트 이미지 */}
                     <Link href={`/r/${subName}`} legacyBehavior>
                       <a className="w-10 h-10">
                         <Image
@@ -123,6 +131,7 @@ export default function PostCardList({
                         />
                       </a>
                     </Link>
+                    {/* 아지트 이름 */}
                     <Link href={`/r/${subName}`} legacyBehavior>
                       <a className="ml-1 mr-1 text-xs font-bold cursor-pointer hover:underline">
                         from {subName}
@@ -134,6 +143,7 @@ export default function PostCardList({
             </div>
           </div>
         )}
+        {/* 포스트 이미지 */}
         <div
           className={` ${
             type === "mystore"
@@ -160,6 +170,7 @@ export default function PostCardList({
             <div className="h-72"></div>
           )}
         </div>
+        {/* 포스트 내용 */}
         <div
           className={`${
             type === "mystore"
@@ -167,8 +178,9 @@ export default function PostCardList({
               : "w-full"
           }`}
         >
+          {/* 포스트 제목 */}
           <Link href={url} legacyBehavior>
-            <a className="w-full inline-block text-xl font-medium my-4 mb-5 pb-3 border-b border-b-#e5e7eb">
+            <a className="w-full inline-block text-xl font-medium my-4 mb-5 pb-3 border-b border-b-#e5e7eb text-ellipsis overflow-hidden whitespace-nowrap">
               {keyWord
                 ? title
                     .replaceAll(keyWord, `@#$${keyWord}@#$`)
@@ -193,6 +205,7 @@ export default function PostCardList({
               )}
             </a>
           </Link>
+          {/* 포스트 장르 태그 */}
           <div className="text-xm">
             <div className="flex items-center font-13">
               장르:{" "}
@@ -218,7 +231,7 @@ export default function PostCardList({
               </Tag>
             </div>
           </div>
-
+          {/* 포스트 가격 */}
           <div className="mb-4 text-xm font-13">
             <p>
               가격:{" "}
@@ -232,22 +245,21 @@ export default function PostCardList({
               </span>{" "}
             </p>
           </div>
+          {/* 음악 파일 및 가격 정보 */}
           {type !== "catagory" && (
             <>
               {musicFileUrl && <AudioLayout audioUrl={musicFileUrl} />}
+              {/* 댓글 및 좋아요 정보 */}
               <div className="flex justify-between items-center pt-4">
                 <div className="flex items-center">
                   <Link href={url} legacyBehavior>
                     <i className="mr-1 fas fa fa-comment-alt fa-xs"></i>
                   </Link>
-
                   <span className="text-xs">댓글 {commentCount} 개</span>
                 </div>
                 <div className="flex flex-shrink-0 text-center justify-between">
-                  {/* <span className="mx-1 text-xs">{timeForToday(createdAt)}</span> */}
                   <div className="flex">
-                    {/* 좋아요 */}
-
+                    {/* 좋아요 버튼 */}
                     <div
                       className="w-6 mx-auto text-gray-400  cursor-pointer  hover:text-red-500"
                       onClick={() => vote(1)}

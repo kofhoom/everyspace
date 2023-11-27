@@ -208,7 +208,7 @@ export default function PostCreateList({ isEdit }: IPostState) {
         onChange={uploadFile}
       />
 
-      <div className="w-10/12 mx-auto md:w-96 p-4 bg-white  mb-2 border border-gray-200 rounded-lg shadow-md">
+      <div className="mx-auto w-96 sm:w-11/12 p-4 bg-white  mb-2 border border-gray-200 rounded-lg shadow-md">
         <h1 className="text-2xl font-semibold">음원 등록</h1>
         <Divider className="mb-5 mt-3" />
         <div className="w-full">
@@ -227,7 +227,6 @@ export default function PostCreateList({ isEdit }: IPostState) {
                     backgroundPosition: "center",
                   }}
                 ></div>
-
                 <button
                   type="button"
                   className="px-3 py-1 text-sm font-semibold text-white bg-gray-300 hover:bg-black transition-all rounded-lg"
@@ -257,7 +256,6 @@ export default function PostCreateList({ isEdit }: IPostState) {
                     {musicName}
                   </span>
                 )}
-
                 <div>
                   <small className="font-medium text-red-500">
                     {errors.music}

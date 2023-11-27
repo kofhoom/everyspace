@@ -1,3 +1,4 @@
+// 아지트 생성 페이지
 import { GetServerSideProps } from "next";
 import axios from "axios";
 import AgitCreateList from "@/src/components/units/agit/create/AgitCreateList.index";

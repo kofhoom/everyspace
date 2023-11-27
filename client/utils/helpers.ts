@@ -36,14 +36,3 @@ export const formatTime = (timeInSeconds: number) => {
     "0"
   )}`;
 };
-
-// 링크복사
-
-export const handleCopyClipBoard = (text: string) => async (e: MouseEvent) => {
-  try {
-    await navigator.clipboard.writeText(text);
-    alert("클립보드에 링크가 복사되었어요.");
-  } catch (err) {
-    console.log(err);
-  }
-};

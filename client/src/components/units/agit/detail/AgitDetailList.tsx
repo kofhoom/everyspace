@@ -98,7 +98,7 @@ export default function AgitDetailList() {
   return (
     <>
       {sub && (
-        <div>
+        <div style={{ minHeight: "calc(100vh - 252px)" }}>
           {/* 베너 이미지 */}
           <input
             type="file"

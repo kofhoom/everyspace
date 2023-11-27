@@ -1,12 +1,12 @@
-import { Comment, Post } from "@/types";
-import { useRouter } from "next/router";
 import useSwR from "swr";
 import PostCardList from "../post/cardList/PostCardList.index";
+import BasicTable from "../../commons/table";
+import axios from "axios";
 import Link from "next/link";
 import { Tabs, Button, Empty } from "antd";
 import type { TabsProps } from "antd";
-import BasicTable from "../../commons/table";
-import axios from "axios";
+import { Comment, Post } from "@/types";
+import { useRouter } from "next/router";
 import { TfiWrite } from "react-icons/tfi";
 import { AiOutlineComment, AiOutlineOrderedList } from "react-icons/ai";
 
@@ -30,7 +30,7 @@ export default function UserList() {
   const userSellingPostListArry = data.userData.filter(
     (el: any) => el.type == "myPostSellItems"
   );
-
+  console.log(userSellingPostListArry);
   const handleDownload = (address: string) => async (e: any) => {
     const rep: string | undefined = address.split("/").at(-1);
     try {
@@ -64,7 +64,8 @@ export default function UserList() {
   };
 
   const handleApproveReject = (type: string) => async (event: any) => {
-    const userId = event.currentTarget.getAttribute("data-username"); // 이벤트 데이터 속성에서 username 가져오기
+    // 이벤트 데이터 속성에서 username 가져오기
+    const userId = event.currentTarget.getAttribute("data-username");
     if (!userId) return window.alert("사용자 id가 없습니다.");
 
     // 승인 처리 API 호출
@@ -78,6 +79,7 @@ export default function UserList() {
     }
   };
 
+  // 표 컬럼 정의
   const columns = [
     {
       title: "유저 이름",
@@ -94,6 +96,7 @@ export default function UserList() {
             type="primary"
             className="hover:outline-black font-medium w-1/2 mr-2"
             block
+            style={{ height: "2.1rem" }}
             size={"small"}
             onClick={handleApproveReject("approve")}
             data-username={el}
@@ -103,6 +106,7 @@ export default function UserList() {
           <Button
             className="hover:outline-black font-medium w-1/2 danger"
             block
+            style={{ height: "2.1rem" }}
             size={"small"}
             danger
             onClick={handleApproveReject("Reject")}
@@ -115,6 +119,7 @@ export default function UserList() {
     },
   ];
 
+  // 표 컬럼 정의 (결제 내역)
   const paymentColumns = [
     {
       title: "판매자",
@@ -165,6 +170,7 @@ export default function UserList() {
     },
   ];
 
+  // 표 컬럼 정의 (판매 내역)
   const paymentColumns2 = [
     {
       title: "구매자",
@@ -186,6 +192,7 @@ export default function UserList() {
     },
   ];
 
+  // 탭 메뉴 정의
   const items: TabsProps["items"] = [
     {
       key: "1",
@@ -340,7 +347,10 @@ export default function UserList() {
   ];
 
   return (
-    <div className="max-w-5xl px-4 pt-5 mx-auto">
+    <div
+      className="max-w-5xl px-4 pt-5 mx-auto"
+      style={{ minHeight: "calc(100vh - 243px)" }}
+    >
       <Tabs
         defaultActiveKey="1"
         items={items}
