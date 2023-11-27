@@ -227,7 +227,7 @@ const approval = async (req: Request, res: Response) => {
 // 승인거절 요청 처리 엔드포인트
 const reject = async (req: Request, res: Response) => {
   const currentUsername = req.params.userId;
-  console.log(currentUsername, "asdasd");
+
   try {
     const user: User = res.locals.user;
     const currentUser = await User.findOneByOrFail({

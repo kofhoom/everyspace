@@ -14,7 +14,7 @@ const { Sider, Content } = Layout;
 export default function AdminMainPage() {
   const selectedNav = useRecoilValue(selectedNavState);
   return (
-    <Layout style={{ eight: "100vh" }}>
+    <Layout style={{ height: "100vh" }}>
       <AdminNavbar />
       <Sider width={200} theme="dark">
         <AdminSidebar selectedNav={selectedNav} />
