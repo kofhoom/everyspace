@@ -33,7 +33,7 @@ export default function PostDetailList() {
 
   // 복사 성공 시 처리
   const handleCopy = () => {
-    alert("URL이 복사되었습니다: " + currentUrl);
+    alert("URL이 복사되었습니다");
   };
 
   // 포스트 삭제
