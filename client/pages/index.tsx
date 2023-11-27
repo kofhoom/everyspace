@@ -1,14 +1,15 @@
-import PostCardList from "@/src/components/units/post/cardList/PostCardList.index";
-import { Post, Sub } from "@/types";
-import useSWR from "swr";
-import { Divider, Empty } from "antd";
+// 메인 페이지
 import { useState } from "react";
+import { Post, Sub } from "@/types";
+import { useRouter } from "next/router";
+import { Divider, Empty } from "antd";
+import useSWR from "swr";
+import Link from "next/link";
 import axios from "axios";
 import SearchBar from "@/src/components/commons/searchBar";
 import CarouselList from "@/src/components/commons/slider";
-import { useRouter } from "next/router";
-import Link from "next/link";
 import AgitList from "@/src/components/units/agit/AgitList.index";
+import PostCardList from "@/src/components/units/post/cardList/PostCardList.index";
 import CatagoryList from "@/src/components/units/category/CatagoryList.index";
 
 export default function Home() {
@@ -73,6 +74,7 @@ export default function Home() {
       }
     };
 
+  // 검색어 입력 핸들러
   const handleSearch = async () => {
     if (!searchData) {
       window.alert("검색어를 입력해 주세요");
@@ -106,6 +108,7 @@ export default function Home() {
               따끈따끈한 신곡을 확인해 보세요
             </span>
           </h2>
+          {/* 전체보기 버튼 */}
           <span
             id="post"
             className="cursor-pointer hover:underline transition sm:ml-auto"
@@ -152,7 +155,9 @@ export default function Home() {
           </span>
         </h2>
         <Divider className="mb-5 mt-2" />
-        <div className={`w-full ${isPopularData ? "" : "layout"}`}>
+        <div
+          className={`w-full ${isPopularData ? "" : "layout md:flex flex-col"}`}
+        >
           {isInitialLoading && (
             <p className="text-lg text-center">로딩중입니다.</p>
           )}
@@ -243,7 +248,7 @@ export default function Home() {
       <section className="w-full h-96 flex justify-center items-center flex-col">
         <div className="w-full text-center">
           <p className="text-4xl mb-2 sm:text-2xl break-keep">
-            들어 주셔서 감사합니다. 이제 참여하세요.
+            들어주셔서 감사합니다. 이제 참여하세요.
           </p>
           <p className="sm:text-sm break-keep">
             트랙을 확인하고, 아티스트를 서포트하고, 원하는 음악을 가지세요.

@@ -1,3 +1,4 @@
+// 나의 상점 페이지
 import MyStoreList from "@/src/components/units/mystore/Mystore.index";
 import axios from "axios";
 import { GetServerSideProps } from "next";

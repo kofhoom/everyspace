@@ -1,13 +1,14 @@
 import { Sub } from "@/types";
+import { Button } from "antd";
 import { AppstoreAddOutlined } from "@ant-design/icons";
+import { MouseEventHandler, useState, useEffect } from "react";
 import useSwR from "swr";
 import dayjs from "dayjs";
-import { Button } from "antd";
-import BasicTable from "@/src/components/commons/table";
-import { MouseEventHandler, useState, useEffect } from "react";
 import axios from "axios";
+import BasicTable from "@/src/components/commons/table";
 import SearchBar from "@/src/components/commons/searchBar";
 
+// 검색 옵션
 const option = [
   { values: "전체" },
   { values: "개설자" },
@@ -20,7 +21,10 @@ interface PageContentProps {
 }
 
 export default function AdminHideoutList({ selectedNav }: PageContentProps) {
+  // useSwR 훅을 사용하여 서브네임 목록을 가져오기
   const { data, error, mutate } = useSwR<Sub[]>("/boards/" || null);
+
+  // 검색어와 검색 타입 상태
   const [searchData, setSearchData] = useState("");
   const [searchType, setSearchType] = useState("all");
   const [searchTypeChoose, setSearchTypeChoose] = useState("all");
@@ -40,6 +44,7 @@ export default function AdminHideoutList({ selectedNav }: PageContentProps) {
     setSearchTypeChoose(koLang);
   }, [searchType]);
 
+  // 검색 실행 핸들러
   const handleSearch = async () => {
     if (!searchData) {
       window.alert("검색어를 입력해 주세요");
@@ -47,21 +52,24 @@ export default function AdminHideoutList({ selectedNav }: PageContentProps) {
     }
 
     try {
+      // 검색 API 호출
       const { data: subs } = await axios.post(
         `/search/${selectedNav}/${searchTypeChoose}/${searchData}`
       );
+      // 검색 결과로 데이터 갱신
       mutate(subs, false);
     } catch (error) {
       console.log(error);
     }
   };
 
+  // 테이블 컬럼 정의
   const columns = [
     {
       title: "No",
       dataIndex: "id",
       key: "id",
-
+      // 렌더링 함수를 사용하여 순번 표시
       render: (_: any, __: any, index: number) =>
         data?.length ? data?.length - index : "",
     },
@@ -69,7 +77,7 @@ export default function AdminHideoutList({ selectedNav }: PageContentProps) {
       title: "생성일자",
       dataIndex: "createdAt",
       key: "createdAt",
-
+      // 렌더링 함수를 사용하여 날짜 형식 변환
       render: (createdAt: string) => (
         <>{dayjs(createdAt).format("YYYY-MM-D")}</>
       ),
@@ -103,7 +111,7 @@ export default function AdminHideoutList({ selectedNav }: PageContentProps) {
       title: "아지트 대표 사진",
       dataIndex: "imageUrl",
       key: "imageUrl",
-
+      // 렌더링 함수를 사용하여 이미지 표시
       render: (el: string) => (
         <div
           className="w-20 h-20 m-auto rounded-md"
@@ -122,6 +130,7 @@ export default function AdminHideoutList({ selectedNav }: PageContentProps) {
       dataIndex: "bannerUrn",
       key: "bannerUrn",
       fixed: "center",
+      // 렌더링 함수를 사용하여 이미지 표시
       render: (el: string) =>
         el && (
           <div
@@ -140,6 +149,7 @@ export default function AdminHideoutList({ selectedNav }: PageContentProps) {
       title: "",
       dataIndex: "",
       key: "x",
+      // 렌더링 함수를 사용하여 삭제 버튼 표시
       render: (el: any) => (
         <div className="w-full flex justify-center">
           <Button
@@ -157,6 +167,7 @@ export default function AdminHideoutList({ selectedNav }: PageContentProps) {
     },
   ];
 
+  // 삭제 버튼 클릭 핸들러
   const handleDelete: MouseEventHandler<HTMLElement> = async (event) => {
     const name = event.currentTarget.getAttribute("data-name"); // 이벤트 데이터 속성에서 username 가져오기
     if (!name) return window.alert("사용자 name이 없습니다.");
@@ -178,9 +189,11 @@ export default function AdminHideoutList({ selectedNav }: PageContentProps) {
   };
   return (
     <div className="w-full section-layout">
+      {/* 섹션 타이틀 */}
       <p className="flex items-center text-2xl font-medium pb-3 mb-4 border-b border-b-gray-300">
         <AppstoreAddOutlined className="mr-2" /> 아지트 리스트
       </p>
+      {/* 검색 바 및 테이블 */}
       <div className="mb-10 flex">
         <SearchBar
           setSearchData={setSearchData}

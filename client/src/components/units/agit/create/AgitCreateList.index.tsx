@@ -46,8 +46,11 @@ export default function AgitCreateList() {
     }
   };
   return (
-    <div className="flex flex-col items-center justify-center h-screen p-6">
-      <div className="mx-auto md:w-96 p-4 bg-white  mb-2 border border-gray-200 rounded-lg shadow-md">
+    <div
+      className="flex flex-col items-center justify-center p-6"
+      style={{ minHeight: "calc(100vh - 243px)" }}
+    >
+      <div className="mx-auto w-96 p-4 bg-white  mb-2 border border-gray-200 rounded-lg shadow-md sm:w-full">
         <h1 className="text-2xl font-semibold">아지트 만들기</h1>
         <Divider className="mb-5 mt-3" />
         <form onSubmit={handleSubmit}>

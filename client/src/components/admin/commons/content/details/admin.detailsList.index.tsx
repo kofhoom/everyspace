@@ -1,3 +1,4 @@
+// 어드민 상세 페이지
 import { Descriptions } from "antd";
 
 interface IDetailsProps {
@@ -9,6 +10,7 @@ const AdminDetailsList = ({ data, title }: IDetailsProps) => {
   // data가 null 또는 undefined일 경우 빈 객체로 초기화
   const items = Object.keys(data || {})
     .map((key) => {
+      // 특정 필드 제외 조건
       if (key !== "id" && key !== "password" && key !== "key") {
         return {
           label: key,
@@ -19,9 +21,11 @@ const AdminDetailsList = ({ data, title }: IDetailsProps) => {
     })
     .filter((item) => item !== null);
 
+  // 레이블 한글로 변경하는 함수
   const getLabelLagChange = (labels: string) => {
     let koLang: string;
     const map: any = {
+      // 레이블에 대한 한글 변환 맵
       id: "아이디",
       createdAt: "생성일",
       updatedAt: "업데이트 일",
@@ -75,6 +79,7 @@ const AdminDetailsList = ({ data, title }: IDetailsProps) => {
   };
   return (
     <Descriptions title={title} bordered>
+      {/* 각 항목에 대한 Descriptions.Item 생성 */}
       {items.map((item) => (
         <Descriptions.Item
           key={item?.label}

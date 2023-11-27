@@ -4,6 +4,8 @@ import { MenuOutlined } from "@ant-design/icons";
 import { User } from "@/types";
 import Link from "next/link";
 import Image from "next/image";
+
+// MobileNavBarList 컴포넌트 정의
 interface IMobileNavProps {
   handleLogout: () => void;
   loading: boolean;
@@ -11,6 +13,7 @@ interface IMobileNavProps {
   user: User | undefined;
 }
 
+// MobileNavBarList 함수 컴포넌트 정의
 export default function MobileNavBarList({
   handleLogout,
   loading,
@@ -25,21 +28,25 @@ export default function MobileNavBarList({
 
   return (
     <>
+      {/* 메뉴 아이콘 버튼 */}
       <Button
         type="primary"
         icon={<MenuOutlined />}
         onClick={handelDrawer}
       ></Button>
+      {/* Drawer 컴포넌트 */}
       <Drawer
         placement="right"
         onClose={handelDrawer}
         open={open}
         extra={
           <>
+            {/* 사용자 정보 및 메뉴 */}
             <div className="flex flex-col ">
               {!loading &&
                 (authenticated ? (
                   <>
+                    {/* 인증된 사용자 정보 */}
                     <div className="flex items-center mb-3">
                       <Link href={`/u/${user!.username}`} legacyBehavior>
                         <a className="flex justify-center items-center w-8 h-8 border border-gray-300 rounded-full overflow-hidden mr-2">
@@ -57,6 +64,7 @@ export default function MobileNavBarList({
                         <b>{user?.username}</b>님 환영합니다.
                       </p>
                     </div>
+                    {/* 로그인된 사용자 메뉴 */}
                     <div className="flex items-center w-36 ml-auto">
                       <div onClick={handelDrawer} className="w-full">
                         <Link href={`/u/${user!.username}`} legacyBehavior>
@@ -75,6 +83,7 @@ export default function MobileNavBarList({
                     </div>
                   </>
                 ) : (
+                  // 미인증 사용자 메뉴
                   <div
                     className="flex items-center w-28"
                     onClick={handelDrawer}
@@ -96,6 +105,7 @@ export default function MobileNavBarList({
           </>
         }
       >
+        {/* 메뉴 목록 */}
         <div className="mr-auto">
           <ul className="flex flex-col">
             <li

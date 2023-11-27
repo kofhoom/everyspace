@@ -15,10 +15,12 @@ import Link from "next/link";
 
 const { Header } = Layout;
 
+// AdminNavbar 컴포넌트 정의
 const AdminNavbar = () => {
-  const { loading, authenticated, user } = useAuthState();
+  const { user } = useAuthState();
   const dispatch = useAuthDispatch();
 
+  // 로그아웃 처리 함수
   const handleLogout = () => {
     axios
       .post("/auth/logout")
@@ -31,10 +33,12 @@ const AdminNavbar = () => {
       });
   };
 
+  // Recoil을 사용하여 선택된 네비게이션 상태를 가져오고 설정하는 부분
   const [selectedNav, setSelectedNav] = useRecoilState(selectedNavState);
   const handleNavClick = (nav: any) => {
     setSelectedNav(nav.key);
   };
+  // 컴포넌트 렌더링
   return (
     <Header
       style={{
@@ -49,9 +53,11 @@ const AdminNavbar = () => {
       }}
     >
       <div className="logo px-3 flex justify-between">
+        {/* 홈페이지로 이동하는 링크 */}
         <Link href={`/admin`} legacyBehavior>
           My Admin
         </Link>
+        {/* 사용자 정보 및 로그아웃, 홈페이지로 이동하는 섹션 */}
         <div className="flex items-center">
           <p className="text-xs mr-3">
             <b>{user?.username}</b>님 환영합니다.
@@ -67,6 +73,7 @@ const AdminNavbar = () => {
           </Link>
         </div>
       </div>
+      {/* 네비게이션 메뉴 */}
       <Menu
         theme="dark"
         mode="horizontal"

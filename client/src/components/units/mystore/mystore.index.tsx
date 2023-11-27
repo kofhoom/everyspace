@@ -1,13 +1,9 @@
 import { Post } from "@/types";
 import { useRouter } from "next/router";
-import useSWR from "swr";
-import PostCardList from "../post/cardList/PostCardList.index";
-import Image from "next/image";
 import { Tabs, Button } from "antd";
 import type { TabsProps } from "antd";
 import { TfiWrite } from "react-icons/tfi";
 import { Space } from "antd";
-
 import axios from "axios";
 import { useRef, useState, useEffect } from "react";
 import type { ChangeEvent } from "react";
@@ -15,7 +11,10 @@ import { useAuthState } from "@/src/context/auth";
 import { CameraOutlined } from "@ant-design/icons";
 import { FaRegCopy } from "react-icons/fa";
 import type { SizeType } from "antd/es/config-provider/SizeContext";
-import { handleCopyClipBoard } from "@/utils/helpers";
+import useSWR from "swr";
+import PostCardList from "../post/cardList/PostCardList.index";
+import Image from "next/image";
+import CopyToClipboardButton from "../../commons/button/copyButton";
 
 export default function MyStoreList() {
   const router = useRouter();
@@ -27,6 +26,14 @@ export default function MyStoreList() {
   const { authenticated, user } = useAuthState();
   const [size, setSize] = useState<SizeType>("middle"); // default is 'middle'
   const [ownSub, setOwnSub] = useState<Boolean | string>(false);
+
+  // 현재 페이지의 URL 가져오기
+  const currentUrl = typeof window !== "undefined" ? window.location.href : "";
+
+  // 복사 성공 시 처리
+  const handleCopy = () => {
+    alert("URL이 복사되었습니다: " + currentUrl);
+  };
 
   // 자신의 글인지 판별 유무
   useEffect(() => {
@@ -71,7 +78,7 @@ export default function MyStoreList() {
       children: (
         <>
           <div className="w-full section-layout border shadow-md  ms:px-5">
-            <p className="flex items-center text-2xl font-medium pb-3 mb-4 border-b border-b-gray-300">
+            <p className="main-section-title mb-2 flex items-center">
               <TfiWrite className="mr-2" /> {data.user.username}의 음악
             </p>
             {data.userData.map((data: any) => {
@@ -94,7 +101,7 @@ export default function MyStoreList() {
     },
   ];
   return (
-    <div className=" max-w-5xl px-4 pt-5 mx-auto mb-5">
+    <div className="max-w-5xl px-4 pt-5 mx-auto mb-5">
       <input
         type="file"
         hidden={true}
@@ -186,17 +193,14 @@ export default function MyStoreList() {
       </div>
       <div className="w-full text-end">
         <Space wrap className="mb-2 ml-auto">
-          <Button
-            block
-            type="primary"
-            icon={<FaRegCopy />}
-            size={size}
-            onClick={handleCopyClipBoard(
-              `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/mystore/${data?.user.username}`
-            )}
+          {/* 링크 공유 버튼 */}
+          <CopyToClipboardButton
+            text={currentUrl}
+            onCopy={handleCopy}
+            icon={FaRegCopy}
           >
             링크 공유
-          </Button>
+          </CopyToClipboardButton>
         </Space>
       </div>
       <Tabs

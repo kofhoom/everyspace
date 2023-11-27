@@ -5,10 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import MobileNavBarList from "./mNavBar";
 
+// NavBar 컴포넌트 정의
 export default function NaveBar() {
   const { loading, authenticated, user } = useAuthState();
   const dispatch = useAuthDispatch();
 
+  // 로그아웃 핸들러
   const handleLogout = () => {
     axios
       .post("/auth/logout")
@@ -23,6 +25,7 @@ export default function NaveBar() {
 
   return (
     <div className="fixed inset-x-0 top-0 z-10 flex items-center justify-between h-13 p-3 bg-white border-b max-w-6xl m-auto">
+      {/* 로고 */}
       <div>
         <Link href="/" legacyBehavior>
           <a className="flex items-center">
@@ -37,6 +40,7 @@ export default function NaveBar() {
           </a>
         </Link>
       </div>
+      {/* PC 화면 네비게이션 */}
       <div className="mr-auto ms:hidden">
         <ul className="flex items-center">
           <li className="text-sm transition hover:font-semibold cursor-pointer mr-3">
@@ -54,7 +58,8 @@ export default function NaveBar() {
           </li>
         </ul>
       </div>
-      <div className="ml-auto pr-5 ms:hidden">
+      {/* PC 화면 업로드 버튼 */}
+      <div className="ml-auto pr-5">
         <div className="text-sm  cursor-pointer mr-2">
           <button className="w-20 px-2 text-xs h-7 text-center text-gray-400 font-normal border-gray-300 hover:border-blue-500 hover:font-semibold hover:text-blue-500 transition rounded-xl border">
             <Link href={`/create`} legacyBehavior>
@@ -65,10 +70,12 @@ export default function NaveBar() {
           </button>
         </div>
       </div>
+      {/* 사용자 정보 및 로그인/로그아웃 버튼 */}
       <div className="flex items-center ms:hidden">
         {!loading &&
           (authenticated ? (
             <>
+              {/* 인증된 사용자 정보 */}
               <Link href={`/u/${user!.username}`} legacyBehavior>
                 <a className="flex justify-center items-center w-8 h-8 border border-gray-300 rounded-full overflow-hidden mr-2">
                   <Image
@@ -99,6 +106,7 @@ export default function NaveBar() {
               </div>
             </>
           ) : (
+            // 미인증 사용자 메뉴
             <div className="flex items-center w-28">
               <Link href={`/login`} legacyBehavior>
                 <a className="flex justify-center items-center w-full h-full text-xs mr-2 hover:underline cursor-pointer transition">
@@ -107,12 +115,13 @@ export default function NaveBar() {
               </Link>
               <Link href={`/register`} legacyBehavior>
                 <a className="flex justify-center items-center w-full h-full text-xs hover:underline cursor-pointer transition">
-                  회원가입.
+                  회원가입
                 </a>
               </Link>
             </div>
           ))}
       </div>
+      {/* 모바일 화면 네비게이션 */}
       <div className="hidden ms:block">
         <MobileNavBarList
           loading={loading}

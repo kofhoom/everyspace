@@ -1,3 +1,4 @@
+// 마이페이지 페이지
 import UserList from "@/src/components/units/user/UserList.index";
 import axios from "axios";
 import { GetServerSideProps } from "next";

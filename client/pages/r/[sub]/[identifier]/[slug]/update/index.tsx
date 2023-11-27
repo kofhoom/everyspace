@@ -1,3 +1,4 @@
+// 글 수정 페이지
 import PostCreateList from "@/src/components/units/post/create/PostCreate.index";
 import axios from "axios";
 import { GetServerSideProps } from "next";

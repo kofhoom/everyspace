@@ -10,14 +10,15 @@ import { CgUserList } from "react-icons/cg";
 // BiImage
 
 interface ISideBarProps {
+  // 게시판 정보와 권한 정보를 받아옴
   sub: Sub;
   ownSub: boolean;
   setEdit: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SideBar({ sub, ownSub, setEdit }: ISideBarProps) {
-  const { user } = useAuthState();
-  const [error, setError] = useState<any>({});
+  const { user } = useAuthState(); // 사용자 인증 정보를 가져옴
+  const [error, setError] = useState<any>({}); // 에러 상태 관리
 
   const text = sub.subMember?.map((el: any, index) => (
     <div key={index}>
@@ -32,10 +33,14 @@ export default function SideBar({ sub, ownSub, setEdit }: ISideBarProps) {
       width: buttonWidth,
     },
   };
+
+  // 가입 신청 처리 함수
   const handleRequestApproval = async (userId: string) => {
-    if (ownSub) return;
+    if (ownSub) return; // 자신이 개설한 게시판인 경우 가입 신청 불가
+
     // 승인 요청 보내기 API 호출
     try {
+      // 가입 신청 API 호출
       const result = await axios.put(`/auth/${userId}/request-approval`, {
         requesterUserId: user?.username,
       });
@@ -95,7 +100,9 @@ export default function SideBar({ sub, ownSub, setEdit }: ISideBarProps) {
                 <p className="w-full inline-block p-2 text-xs text-black bg-white rounded">
                   가입 신청
                 </p>
-                <p>{error.message}</p>
+                {error.message && (
+                  <p className="text-xs mb-2 text-red-600">{error.message}</p>
+                )}
               </div>
             ) : (
               ""

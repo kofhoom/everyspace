@@ -11,7 +11,6 @@ import { RecoilRoot } from "recoil";
 import FooterLayout from "@/src/components/commons/footer";
 
 export default function App({ Component, pageProps }: AppProps) {
-  axios.defaults.headers["Access-Control-Allow-Origin"] = "*";
   Axios.defaults.baseURL = process.env.NEXT_PUBLIC_SERVER_BASE_URL + "/api";
   Axios.defaults.withCredentials = true; // 쿠키에 유져 토큰 저장 허용
   const { pathname } = useRouter();
@@ -44,7 +43,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <RecoilRoot>
           <AuthProvider>
             {authRoute ? "" : <NaveBar />}
-            <div className={!authRoute ? "pt-55" : ""} style={{}}>
+            <div className={!authRoute ? "pt-55" : ""}>
               <Component {...pageProps} />
               <FooterLayout />
             </div>

@@ -68,6 +68,14 @@
     url(//fonts.gstatic.com/ea/notosanskr/v2/NotoSansKR-Black.otf)
       format("opentype");
 }
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: "Noto Sans KR";
+}
+
 .ant-btn-primary {
   background: white;
   color: black;
@@ -85,22 +93,11 @@
   color: black !important;
   border-color: black;
 }
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-  font-family: "Noto Sans KR";
-}
+
 .layout {
   display: grid;
   grid-template-columns: repeat(3, minmax(calc(33.333% - 10px), auto));
   gap: 10px;
-}
-
-@media (max-width: 1000px) {
-  .layout {
-    grid-template-columns: repeat(2, minmax(calc(50% - 10px), auto));
-  }
 }
 
 .layout2 {
@@ -111,7 +108,7 @@
 
 .section-layout {
   background: white;
-  padding: 2rem 2rem;
+  padding: 2rem 1rem;
   @apply rounded-xl;
 }
 
@@ -171,9 +168,6 @@ img {
   opacity: 1;
 }
 
-.ant-tabs-nav {
-  /* width: fit-content;   */
-}
 .ant-tabs-tab-active .ant-tabs-tab-btn {
   font-weight: 600;
 }
@@ -236,24 +230,6 @@ img {
   height: 190px;
   display: grid !important;
 }
-@media (max-width: 667px) {
-  /* .ant-segmented-group span {
-    overflow: hidden !important;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    display: inline-block;
-    width: 160px;
-  } */
-  .section-layout {
-    padding: 1rem 2rem;
-  }
-}
-@media (max-width: 603px) {
-  .ant-segmented-group {
-    grid-template-columns: repeat(2, minmax(calc(50% - 10px), auto));
-  }
-}
 
 .ant-segmented-item-selected {
   width: 100%;
@@ -282,6 +258,10 @@ img {
   border-radius: 6px;
 }
 
+.pt-55 {
+  padding-top: 55px;
+}
+
 .px-0 {
   padding-left: 0 !important;
   padding-right: 0 !important;
@@ -291,6 +271,20 @@ img {
   height: calc(100vh - 244px);
 }
 
-.pt-55 {
-  padding-top: 55px;
+@media (max-width: 1000px) {
+  .layout {
+    grid-template-columns: repeat(2, minmax(calc(50% - 10px), auto));
+  }
+}
+
+@media (max-width: 667px) {
+  .section-layout {
+    padding: 2rem 1rem;
+  }
+}
+
+@media (max-width: 603px) {
+  .ant-segmented-group {
+    grid-template-columns: repeat(2, minmax(calc(50% - 10px), auto));
+  }
 }
