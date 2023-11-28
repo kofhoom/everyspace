@@ -33,7 +33,7 @@ export default function PostDetailList() {
 
   // 복사 성공 시 처리
   const handleCopy = () => {
-    alert("URL이 복사되었습니다: " + currentUrl);
+    alert("URL이 복사되었습니다");
   };
 
   // 포스트 삭제
@@ -186,66 +186,67 @@ export default function PostDetailList() {
     if (!authenticated) return router.push("/login");
     if (isOwnUser) return window.alert("자신의 곡은 구매하실 수 없습니다.");
 
-    const IMP = window.IMP;
+    if (!window.IMP) return;
+    /* 1. 가맹점 식별하기 */
+    const { IMP } = window;
     IMP.init("imp35254072");
-    IMP.request_pay(
-      {
-        // param
-        pg: "kakaopay",
-        pay_method: "card",
-        //  merchant_uid: "ORD20180131-0000011",
-        name: post?.title,
-        amount: post?.price,
-        buyer_email: post?.user?.email,
-        buyer_name: user?.username,
-        buyer_tel: post?.user?.tel,
-        buyer_addr: "서울특별시 강남구 신사동",
-        buyer_postcode: "01181",
-        // m_redirect_url: "http://localhost:3000/section28/28-01-payment",
-        // 모바일에서는 결제시, 페이지 주소가 바뀜. 따라서 결제 끝나고 들어갈 주소가 필요
-      },
-      async (rsp: any) => {
-        // callback
-        if (rsp.success === true) {
-          // 결제 성공 시 로직,
-          console.log(rsp);
-          try {
-            // 백엔드에 결제관련 데이터 넘겨주기 => 즉, 뮤테이션 실행하기
-            const { data } = await axios.post(
-              `/payments/${post?.identifier}/${post?.slug}`,
-              {
-                buyer_music_title: rsp.name,
-                buyer_name: rsp.buyer_name,
-                seller_name: post?.username,
-                paid_amount: rsp.paid_amount,
-                buyer_email: rsp.buyer_email,
-                buyer_tel: rsp.buyer_tel,
-                pg_provider: rsp.pg_provider,
-                success: rsp.success,
-                musicFileUrl: post?.musicFileUrl,
-              }
-            );
-
-            console.log(data);
-            postMutate();
-          } catch (error) {
-            console.log(error);
-          }
-        } else {
-          // 결제 실패 시 로직,
-          console.log("결제 실패");
-        }
-      }
-    );
+    const data: any = {
+      // param
+      pg: "kakaopay.TC0ONETIME",
+      pay_method: "card",
+      merchant_uid: "ORD20180131-0000011",
+      name: post?.title,
+      amount: post?.price,
+      buyer_email: post?.user?.email,
+      buyer_name: user?.username,
+      buyer_tel: post?.user?.tel,
+      buyer_addr: "서울특별시 강남구 신사동",
+      buyer_postcode: "01181",
+      m_redirect_url: `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/mobile`,
+      // 모바일에서는 결제시, 페이지 주소가 바뀜. 따라서 결제 끝나고 들어갈 주소가 필요
+    };
+    IMP.request_pay(data, callback);
   };
+  async function callback(rsp: any) {
+    // callback
+    if (rsp.success === true) {
+      // 결제 성공 시 로직,
+      console.log(rsp);
+      try {
+        // 백엔드에 결제관련 데이터 넘겨주기 => 즉, 뮤테이션 실행하기
+        const { data } = await axios.post(
+          `/payments/${post?.identifier}/${post?.slug}`,
+          {
+            buyer_music_title: rsp.name,
+            buyer_name: rsp.buyer_name,
+            seller_name: post?.username,
+            paid_amount: rsp.paid_amount,
+            buyer_email: rsp.buyer_email,
+            buyer_tel: rsp.buyer_tel,
+            pg_provider: rsp.pg_provider,
+            success: rsp.success,
+            musicFileUrl: post?.musicFileUrl,
+          }
+        );
+
+        console.log(data);
+        postMutate();
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      // 결제 실패 시 로직,
+      console.log("결제 실패");
+    }
+  }
   return (
-    <div className="flex max-w-6xl pt-5 justify-center m-auto">
+    <div className="flex max-w-6xl pt-5 justify-center m-auto ms:p-4">
       <div className="w-full">
         <div className="bg-white border rounded-md shadow-md overflow-hidden pb-6">
           {post && (
             <>
               <div className="flex mb-4 bg-white p-5">
-                <div className="flex w-full justify-between ms:flex-col">
+                <div className="flex w-full justify-between ms:flex-col-reverse">
                   <div className="w-5/12 ms:w-full">
                     <div className="mb-4">
                       <h1 className="my-1 text-3xl font-semibold">
@@ -322,7 +323,7 @@ export default function PostDetailList() {
                       {dayjs(post.createdAt).format("MM, YYYY")}
                     </div>
                   </div>
-                  <div className="w-6/12 ms:w-full">
+                  <div className="w-6/12 ms:w-full ms:mb-5">
                     <div
                       className="h-72 mb-3"
                       style={{
