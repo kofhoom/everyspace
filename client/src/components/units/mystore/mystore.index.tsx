@@ -1,6 +1,6 @@
 import { Post } from "@/types";
 import { useRouter } from "next/router";
-import { Tabs, Button } from "antd";
+import { Tabs, Button, Empty } from "antd";
 import type { TabsProps } from "antd";
 import { TfiWrite } from "react-icons/tfi";
 import { Space } from "antd";
@@ -70,7 +70,7 @@ export default function MyStoreList() {
     }
   };
   if (!data) return null;
-
+  console.log(data.userData.length === 0);
   const items: TabsProps["items"] = [
     {
       key: "1",
@@ -81,6 +81,15 @@ export default function MyStoreList() {
             <p className="main-section-title mb-2 flex items-center">
               <TfiWrite className="mr-2" /> {data.user.username}의 음악
             </p>
+            {/* 데이터가 없을 경우 */}
+            {data.userData.length === 0 && (
+              <>
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />{" "}
+                <p className="text-lg text-center text-gray-300">
+                  데이터가 없습니다.
+                </p>
+              </>
+            )}
             {data.userData.map((data: any) => {
               if (data.type === "Post") {
                 const post: Post = data;
